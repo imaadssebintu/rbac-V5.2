@@ -39,13 +39,13 @@ jobs:
 
       - name: Package project (exclude node_modules, .git, .env)
         run: |
-          tar czf voya-app.tar.gz \
+          tar czf /tmp/voya-app.tar.gz \
             --exclude='node_modules' \
             --exclude='.git' \
             --exclude='.env' \
             --exclude='*/node_modules' \
-            --exclude='voya-app.tar.gz' \
             .
+          mv /tmp/voya-app.tar.gz ./
 
       - name: Upload package to VPS
         uses: appleboy/scp-action@v0.1.7
