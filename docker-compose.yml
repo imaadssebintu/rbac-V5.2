@@ -7,10 +7,9 @@ services:
   app:
     build:
       context: .
-      # Set the API URL to a relative path so both frontend and backend
-      # work on the same domain regardless of domain name/IP.
-      args:
-        REACT_APP_API_URL: /api
+      # Use Dockerfile.prod - expects pre-built frontend in ./public
+      # The frontend is built by GitHub Actions CI during deployment
+      dockerfile: Dockerfile.prod
     ports:
       - "5500:5500"
     environment:
