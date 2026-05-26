@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # -------------------------
+  # Node.js Backend + Frontend
+  # -------------------------
+  app:
+    build:
+      context: .
+      # Set the API URL to a relative path so both frontend and backend
+      # work on the same domain regardless of domain name/IP.
+      args:
+        REACT_APP_API_URL: /api
+    ports:
+      - "5500:5500"
+    environment:
+      - NODE_ENV=production
+      - PORT=5500
+      # --- Database ---
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=${DB_PASSWORD:-change_this_in_production}
+      - DB_NAME=rbac_db
+      - DB_DIALECT=mysql
+      # --- Auth ---
+      - JWT_SECRET=${JWT_SECRET:-change_this_in_production}
+      # --- Frontend URL (used by CORS, etc.) ---
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5500}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:5500}
+      # --- Optional: Clerk ---
+      - VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY:-}
+      - CLERK_SECRET_KEY=${CLERK_SECRET_KEY:-}
+      # --- Optional: Cloudinary ---
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME:-}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY:-}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET:-}
+      # --- Optional: Payments ---
+      - FLW_PUBLIC_KEY=${FLW_PUBLIC_KEY:-}
+      - FLW_SECRET_KEY=${FLW_SECRET_KEY:-}
+      - PAYPAL_CLIENT_ID=${PAYPAL_CLIENT_ID:-}
+      - PAYPAL_CLIENT_SECRET=${PAYPAL_CLIENT_SECRET:-}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
+      # --- Optional: Email ---
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASS=${SMTP_PASS:-}
+      - EMAIL_FROM=${EMAIL_FROM:-}
+      # --- Optional: OAuth ---
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      # Persist uploaded files
+      - uploads_data:/app/public/uploads
+
+  # -------------------------
+  # MySQL Database
+  # -------------------------
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-change_this_in_production}
+      MYSQL_DATABASE: rbac_db
+    # Remove ports mapping in production to avoid exposing MySQL to the host
+    # ports:
+    #   - "3306:3306"
+
+    
+    volumes:
+      - mysql_data:/var/lib/mysql
+      # Optional: seed initial schema on first run
+      # - ./rbac_db.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  uploads_data:

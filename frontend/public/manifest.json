@@ -1,0 +1,75 @@
+{
+  "short_name": "Voya",
+  "name": "Voya - Verified Travel Companions",
+  "description": "Voya connects travelers with verified local guides, security escorts, and destination experts.",
+  "icons": [
+    {
+      "src": "voya-icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#FFFFFF",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#E4405F",
+  "orientation": "portrait-primary",
+  "categories": ["lifestyle", "social", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Book a Trip",
+      "short_name": "Book",
+      "description": "Quickly book a new trip",
+      "url": "/tasks/new",
+      "icons": [{ "src": "/voya-icon.svg", "type": "image/svg+xml", "sizes": "any" }]
+    },
+    {
+      "name": "Messages",
+      "short_name": "Chat",
+      "description": "Check your messages",
+      "url": "/messages",
+      "icons": [{ "src": "/voya-icon.svg", "type": "image/svg+xml", "sizes": "any" }]
+    },
+    {
+      "name": "Explore Guides",
+      "short_name": "Explore",
+      "description": "Find nearby guides",
+      "url": "/explore",
+      "icons": [{ "src": "/voya-icon.svg", "type": "image/svg+xml", "sizes": "any" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": ["auto", "focus-existing", "navigate-existing"]
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+walker",
+      "url": "/?protocol=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "image",
+          "accept": ["image/jpeg", "image/png", "image/webp"]
+        }
+      ]
+    }
+  },
+  "handle_links": "preferred"
+}
