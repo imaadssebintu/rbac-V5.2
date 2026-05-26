@@ -11,13 +11,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-# Copy backend source code
+# Copy backend source code (includes pre-built frontend in ./public)
 COPY . .
-
-# The frontend is pre-built by GitHub Actions and copied to ./public
-# Express serves the frontend from ./public (see index.js)
-# We create the directory if it doesn't exist (for health checks, etc.)
-RUN mkdir -p public
 
 EXPOSE 5500
 

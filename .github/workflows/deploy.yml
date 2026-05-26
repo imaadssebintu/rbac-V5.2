@@ -25,12 +25,15 @@ jobs:
           npm ci
 
       - name: Build frontend
+        env:
+          REACT_APP_API_URL: /api
         run: |
           cd frontend
           npm run build
 
       - name: Copy built frontend to public/
         run: |
+          rm -rf public
           mkdir -p public
           cp -r frontend/build/* public/
 
