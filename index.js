@@ -42,6 +42,8 @@ const __dirname = dirname(__filename);
 // Security middleware - Configure Helmet with cross-origin resource policy
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: false,
+  originAgentCluster: false,
   contentSecurityPolicy: {
     useDefaults: true,
     directives: {
