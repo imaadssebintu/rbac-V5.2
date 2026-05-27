@@ -824,8 +824,8 @@ const Landing = ({ initialAuthMode }) => {
         const city = userLocation || 'Global';
 
         // Fetch images from backend API
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
-        const imagesResponse = await axios.get(`${backendUrl}/api/media/trending?location=${encodeURIComponent(city)}`);
+        const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+        const imagesResponse = await axios.get(`${apiBaseUrl}/media/trending?location=${encodeURIComponent(city)}`);
         
         if (imagesResponse.data && imagesResponse.data.success) {
           setHeroImages(imagesResponse.data.data);
