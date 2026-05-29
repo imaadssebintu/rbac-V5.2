@@ -11,7 +11,7 @@ services:
       # The frontend is built by GitHub Actions CI during deployment
       dockerfile: Dockerfile.prod
     ports:
-      - "5500:5500"
+      - "80:5500"
     environment:
       - NODE_ENV=production
       - PORT=5500

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useUser, useClerk } from '@clerk/clerk-react';
 import {
   Box, Container, Card, CardContent, Typography, TextField,
   Button, Link, Alert, IconButton, InputAdornment, Divider,
@@ -19,8 +18,7 @@ const Login = ({ initialRole = null }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login, completeOAuthLogin, logout } = useAuth();
-  const { isLoaded: clerkLoaded, isSignedIn, user: clerkUser } = useUser();
-  const { signOut: clerkSignOut, openSignIn } = useClerk();
+  const clerkEnabled = !!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
 
   // State Management
   const [formData, setFormData] = useState({ email: '', password: '' });
