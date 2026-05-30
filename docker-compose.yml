@@ -28,7 +28,9 @@ services:
       - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5500}
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:5500}
       # --- Optional: Clerk ---
-      - VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY:-}
+      # REACT_APP_CLERK_PUBLISHABLE_KEY is baked into the frontend at build time (CI/GitHub Actions)
+      # This is included here for documentation / if running with Docker devfile
+      - REACT_APP_CLERK_PUBLISHABLE_KEY=${REACT_APP_CLERK_PUBLISHABLE_KEY:-}
       - CLERK_SECRET_KEY=${CLERK_SECRET_KEY:-}
       # --- Optional: Cloudinary ---
       - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME:-}

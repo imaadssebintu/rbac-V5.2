@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useUser, useClerk } from '@clerk/clerk-react';
 import {
   Box, Container, Card, CardContent, Typography, TextField,
   Button, Link, Alert, IconButton, InputAdornment, Divider,
@@ -30,11 +31,6 @@ const Login = ({ initialRole = null }) => {
   const [qrOpen, setQrOpen] = useState(false);
   const [oauthLoading, setOauthLoading] = useState(false);
   const [oauthProviders, setOauthProviders] = useState([]);
-  const [clerkBridgeLoading, setClerkBridgeLoading] = useState(false);
-  const [clerkBridgeDone, setClerkBridgeDone] = useState(false);
-  const [clerkBridgeRequested, setClerkBridgeRequested] = useState(
-    () => sessionStorage.getItem('voya_clerk_bridge_requested') === '1'
-  );
 
   const roleNameMap = {
     walker: 'walker',
@@ -94,54 +90,6 @@ const Login = ({ initialRole = null }) => {
     }
   }, [location.search, completeOAuthLogin, navigate]);
 
-  useEffect(() => {
-    const bridgeClerkSession = async () => {
-      if (!clerkBridgeRequested || !clerkLoaded || !isSignedIn || !clerkUser || clerkBridgeDone) {
-        return;
-      }
-
-      const email = clerkUser.primaryEmailAddress?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress;
-      const providerRaw = clerkUser.externalAccounts?.[0]?.provider || 'clerk';
-      const provider = String(providerRaw).replace(/^oauth_/, '').toLowerCase();
-      const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ').trim()
-        || clerkUser.username
-        || clerkUser.fullName
-        || 'Social User';
-
-      if (!email) {
-        setLoginError('Clerk did not return an email address. Please use a provider that shares email access.');
-        return;
-      }
-
-      try {
-        setClerkBridgeLoading(true);
-        setLoginError('');
-
-        const response = await authAPI.socialLogin({
-          provider,
-          email,
-          name,
-          role_name: roleNameMap[role] || 'walkee'
-        });
-
-        const token = response.data?.token;
-        if (!token) {
-          throw new Error('Backend did not return a token for the Clerk session.');
-        }
-
-        await completeOAuthLogin(token);
-        setClerkBridgeDone(true);
-        sessionStorage.removeItem('voya_clerk_bridge_requested');
-        navigate('/', { replace: true });
-      } catch (error) {
-        setLoginError(error.response?.data?.message || error.message || 'Unable to complete Clerk sign-in.');
-      } finally {
-        setClerkBridgeLoading(false);
-      }
-    };
-
-    bridgeClerkSession();
-  }, [clerkBridgeRequested, clerkLoaded, isSignedIn, clerkUser, clerkBridgeDone, role, completeOAuthLogin, navigate]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -211,26 +159,6 @@ const Login = ({ initialRole = null }) => {
     window.location.href = `${API_BASE_URL}/auth/oauth/${provider}?role=${encodeURIComponent(selectedRole)}`;
   };
 
-  const handleClerkSignIn = async () => {
-    try {
-      setLoginError('');
-      sessionStorage.setItem('voya_clerk_bridge_requested', '1');
-      setClerkBridgeRequested(true);
-      if (!openSignIn) {
-        setLoginError('Clerk sign-in is not available right now. Please refresh and try again.');
-        return;
-      }
-
-      await openSignIn({
-        forceRedirectUrl: '/login',
-        fallbackRedirectUrl: '/login'
-      });
-    } catch (error) {
-      sessionStorage.removeItem('voya_clerk_bridge_requested');
-      setClerkBridgeRequested(false);
-      setLoginError(error?.errors?.[0]?.message || error?.message || 'Unable to open Clerk sign-in.');
-    }
-  };
 
   const providerMeta = {
     google: { icon: <Google />, label: 'Google' },
@@ -262,39 +190,15 @@ const Login = ({ initialRole = null }) => {
             <Alert severity="error" sx={{ mb: 3 }}>{loginError}</Alert>
           )}
 
-          {clerkBridgeLoading && (
-            <Alert severity="info" sx={{ mb: 3 }}>
-              Finalizing Clerk sign-in...
-            </Alert>
+          {clerkEnabled && (
+            <ClerkLoginSection
+              role={role}
+              roleNameMap={roleNameMap}
+              completeOAuthLogin={completeOAuthLogin}
+              navigate={navigate}
+              setLoginError={setLoginError}
+            />
           )}
-
-          <Box sx={{ mb: 3 }}>
-            <Button
-              variant="contained"
-              color="secondary"
-              fullWidth
-              size="large"
-              sx={{ py: 1.5, borderRadius: 2 }}
-              onClick={handleClerkSignIn}
-            >
-              Continue with Clerk
-            </Button>
-            {isSignedIn && (
-              <Button
-                variant="text"
-                size="small"
-                sx={{ mt: 1 }}
-                onClick={async () => {
-                  setClerkBridgeDone(false);
-                  setClerkBridgeRequested(false);
-                  sessionStorage.removeItem('voya_clerk_bridge_requested');
-                  await clerkSignOut();
-                }}
-              >
-                Switch Clerk account
-              </Button>
-            )}
-          </Box>
 
           <form onSubmit={handleSubmit}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -410,3 +314,127 @@ const Login = ({ initialRole = null }) => {
 };
 
 export default Login;
+
+// ==========================================
+// Clerk Login Section (only rendered when Clerk is configured)
+// Prevents "useUser can only be used within <ClerkProvider />" error
+// ==========================================
+const ClerkLoginSection = ({ role, roleNameMap, completeOAuthLogin, navigate, setLoginError }) => {
+  const { isLoaded: clerkLoaded, isSignedIn, user: clerkUser } = useUser();
+  const { signOut: clerkSignOut, openSignIn } = useClerk();
+
+  const [clerkBridgeLoading, setClerkBridgeLoading] = useState(false);
+  const [clerkBridgeDone, setClerkBridgeDone] = useState(false);
+  const [clerkBridgeRequested, setClerkBridgeRequested] = useState(
+    () => sessionStorage.getItem('voya_clerk_bridge_requested') === '1'
+  );
+
+  // Bridge Clerk session to backend
+  useEffect(() => {
+    const bridgeClerkSession = async () => {
+      if (!clerkBridgeRequested || !clerkLoaded || !isSignedIn || !clerkUser || clerkBridgeDone) {
+        return;
+      }
+
+      const email = clerkUser.primaryEmailAddress?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress;
+      const providerRaw = clerkUser.externalAccounts?.[0]?.provider || 'clerk';
+      const provider = String(providerRaw).replace(/^oauth_/, '').toLowerCase();
+      const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ').trim()
+        || clerkUser.username
+        || clerkUser.fullName
+        || 'Social User';
+
+      if (!email) {
+        setLoginError('Clerk did not return an email address. Please use a provider that shares email access.');
+        return;
+      }
+
+      try {
+        setClerkBridgeLoading(true);
+        setLoginError('');
+
+        const response = await authAPI.socialLogin({
+          provider,
+          email,
+          name,
+          role_name: roleNameMap[role] || 'walkee'
+        });
+
+        const token = response.data?.token;
+        if (!token) {
+          throw new Error('Backend did not return a token for the Clerk session.');
+        }
+
+        await completeOAuthLogin(token);
+        setClerkBridgeDone(true);
+        sessionStorage.removeItem('voya_clerk_bridge_requested');
+        navigate('/', { replace: true });
+      } catch (error) {
+        setLoginError(error.response?.data?.message || error.message || 'Unable to complete Clerk sign-in.');
+      } finally {
+        setClerkBridgeLoading(false);
+      }
+    };
+
+    bridgeClerkSession();
+  }, [clerkBridgeRequested, clerkLoaded, isSignedIn, clerkUser, clerkBridgeDone, role, roleNameMap, completeOAuthLogin, navigate, setLoginError]);
+
+  const handleClerkSignIn = async () => {
+    try {
+      setLoginError('');
+      sessionStorage.setItem('voya_clerk_bridge_requested', '1');
+      setClerkBridgeRequested(true);
+      if (!openSignIn) {
+        setLoginError('Clerk sign-in is not available right now. Please refresh and try again.');
+        return;
+      }
+
+      await openSignIn({
+        forceRedirectUrl: '/login',
+        fallbackRedirectUrl: '/login'
+      });
+    } catch (error) {
+      sessionStorage.removeItem('voya_clerk_bridge_requested');
+      setClerkBridgeRequested(false);
+      setLoginError(error?.errors?.[0]?.message || error?.message || 'Unable to open Clerk sign-in.');
+    }
+  };
+
+  return (
+    <>
+      {clerkBridgeLoading && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          Finalizing Clerk sign-in...
+        </Alert>
+      )}
+
+      <Box sx={{ mb: 3 }}>
+        <Button
+          variant="contained"
+          color="secondary"
+          fullWidth
+          size="large"
+          sx={{ py: 1.5, borderRadius: 2 }}
+          onClick={handleClerkSignIn}
+        >
+          Continue with Clerk
+        </Button>
+        {isSignedIn && (
+          <Button
+            variant="text"
+            size="small"
+            sx={{ mt: 1 }}
+            onClick={async () => {
+              setClerkBridgeDone(false);
+              setClerkBridgeRequested(false);
+              sessionStorage.removeItem('voya_clerk_bridge_requested');
+              if (clerkSignOut) await clerkSignOut();
+            }}
+          >
+            Switch Clerk account
+          </Button>
+        )}
+      </Box>
+    </>
+  );
+};

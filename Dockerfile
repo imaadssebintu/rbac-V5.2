@@ -16,6 +16,10 @@ COPY frontend/ ./
 ARG REACT_APP_API_URL=/api
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
+# Clerk publishable key (optional - for Clerk sign-in integration)
+ARG REACT_APP_CLERK_PUBLISHABLE_KEY=
+ENV REACT_APP_CLERK_PUBLISHABLE_KEY=$REACT_APP_CLERK_PUBLISHABLE_KEY
+
 RUN npm run build
 
 # ============================================
