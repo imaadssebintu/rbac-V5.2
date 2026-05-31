@@ -24,7 +24,9 @@ const PORT = process.env.PORT || 5500;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 const DEFAULT_ORIGINS = [
     'http://localhost:3000',
-    'http://127.0.0.1:3000'
+    'http://127.0.0.1:3000',
+    'https://voyawalk.com',
+    'https://www.voyawalk.com'
 ];
 const normalizeOrigin = (origin) => (origin ? origin.trim().replace(/\/$/, '') : origin);
 const allowedOrigins = new Set(
