@@ -112,7 +112,8 @@ class AuthController {
             }
 
             // 3. Get role
-            const role = await Role.findOne({ where: { name: role_name } });
+            const normalizedRoleName = AuthController.normalizeRoleName(role_name || 'Walkee');
+            const role = await Role.findOne({ where: { name: normalizedRoleName } });
             if (!role) {
                 return res.status(400).json({ success: false, message: 'Invalid role specified' });
             }

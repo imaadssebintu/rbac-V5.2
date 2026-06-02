@@ -33,10 +33,19 @@ const Login = ({ initialRole = null }) => {
   const [oauthProviders, setOauthProviders] = useState([]);
 
   const roleNameMap = {
-    walker: 'walker',
-    walkee: 'walkee',
-    admin: 'admin'
+    walker: 'Walker',
+    walkee: 'Walkee',
+    admin: 'Admin'
   };
+
+  useEffect(() => {
+    const savedClerkRole = sessionStorage.getItem('voya_clerk_role');
+    if (savedClerkRole) {
+      setRole(savedClerkRole);
+      sessionStorage.removeItem('voya_clerk_role');
+    }
+  }, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;

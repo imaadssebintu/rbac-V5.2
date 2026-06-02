@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useClerk } from '@clerk/clerk-react';
 import { authAPI } from '../../services/api';
 import {
   Box,
@@ -78,6 +79,15 @@ const Register = ({ onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [registerError, setRegisterError] = useState('');
+
+  const clerkEnabled = !!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
+  const { openSignUp } = useClerk();
+
+  const roleNameMap = {
+    walker: 'Walker',
+    walkee: 'Walkee',
+    admin: 'Admin'
+  };
 
   const steps = ['Basic Information', 'Role & Location', 'Additional Details'];
 
@@ -194,12 +204,6 @@ const Register = ({ onClose }) => {
       setRegisterError('');
 
       // Prepare registration data - map role from 'walker'/'walkee' to role_name for backend
-      const roleNameMap = {
-        walker: 'Walker',
-        walkee: 'Walkee',
-        admin: 'Admin'
-      };
-
       const registrationData = {
         name: formData.name,
         email: formData.email,
@@ -232,6 +236,26 @@ const Register = ({ onClose }) => {
       console.error('Registration error:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleClerkSignUp = async () => {
+    if (!openSignUp) {
+      setRegisterError('Clerk sign-up is not available right now.');
+      return;
+    }
+
+    try {
+      setRegisterError('');
+      sessionStorage.setItem('voya_clerk_role', formData.role);
+      sessionStorage.setItem('voya_clerk_bridge_requested', '1');
+      await openSignUp({
+        forceRedirectUrl: '/login',
+        fallbackRedirectUrl: '/login'
+      });
+    } catch (error) {
+      const errorMessage = error?.errors?.[0]?.message || error?.message || 'Unable to open Clerk sign-up.';
+      setRegisterError(errorMessage);
     }
   };
 
@@ -676,6 +700,24 @@ const Register = ({ onClose }) => {
             <Alert severity="error" sx={{ mb: 3 }}>
               {registerError}
             </Alert>
+          )}
+
+          {clerkEnabled && (
+            <Box sx={{ mb: 3 }}>
+              <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                size="large"
+                sx={{ py: 1.5, borderRadius: 2, mb: 2 }}
+                onClick={handleClerkSignUp}
+              >
+                Continue with Clerk
+              </Button>
+              <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                Use Clerk for secure authentication. After signup, you will be redirected to login to complete the account bridge.
+              </Typography>
+            </Box>
           )}
 
           {/* Form */}
