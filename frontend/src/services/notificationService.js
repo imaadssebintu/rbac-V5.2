@@ -79,10 +79,15 @@ export const subscribeToPush = async () => {
       };
       const baseUrl = getBackendApiBaseUrl();
       const response = await fetch(`${baseUrl}/vapid-public-key`);
+      if (!response.ok) {
+        const errorBody = await response.text().catch(() => 'Unable to read response body');
+        console.error(`Failed to load VAPID key from backend: ${response.status} ${response.statusText}`, errorBody);
+        return null;
+      }
       vapidKey = await response.text();
     }
 
-    // Safety: Check if we got an HTML error page instead of a key
+    // Safety: Check if we got an invalid response instead of a valid key
     if (!vapidKey || vapidKey.includes("<!DOCTYPE") || vapidKey.length < 20) {
       console.error("Push Error: Invalid VAPID key received (likely a 404 or 500 HTML error).");
       return null;

@@ -157,8 +157,9 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/media', mediaRoutes);
 
 app.get('/api/vapid-public-key', (req, res) => {
-    const vapidKey = process.env.VAPID_PUBLIC_KEY;
+    const vapidKey = process.env.VAPID_PUBLIC_KEY || process.env.REACT_APP_VAPID_PUBLIC_KEY || process.env.VAPID_KEY;
     if (!vapidKey) {
+        console.warn('VAPID public key endpoint called but no VAPID env variable is configured.');
         return res.status(404).json({ success: false, message: 'VAPID public key is not configured' });
     }
     res.type('text/plain').send(vapidKey);
