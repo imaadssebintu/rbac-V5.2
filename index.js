@@ -51,7 +51,7 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://fonts.googleapis.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://static.cloudflareinsights.com"],
       imgSrc: ["'self'", "data:", "blob:", "http:", "https:"],
       connectSrc: ["'self'", "ws:", "wss:", "http:", "https:"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
@@ -155,6 +155,14 @@ app.use('/api/trips', tripRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/media', mediaRoutes);
+
+app.get('/api/vapid-public-key', (req, res) => {
+    const vapidKey = process.env.VAPID_PUBLIC_KEY;
+    if (!vapidKey) {
+        return res.status(404).json({ success: false, message: 'VAPID public key is not configured' });
+    }
+    res.type('text/plain').send(vapidKey);
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

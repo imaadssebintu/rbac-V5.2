@@ -81,7 +81,6 @@ const Register = ({ onClose }) => {
   const [registerError, setRegisterError] = useState('');
 
   const clerkEnabled = !!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
-  const { openSignUp } = useClerk();
 
   const roleNameMap = {
     walker: 'Walker',
@@ -236,26 +235,6 @@ const Register = ({ onClose }) => {
       console.error('Registration error:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleClerkSignUp = async () => {
-    if (!openSignUp) {
-      setRegisterError('Clerk sign-up is not available right now.');
-      return;
-    }
-
-    try {
-      setRegisterError('');
-      sessionStorage.setItem('voya_clerk_role', formData.role);
-      sessionStorage.setItem('voya_clerk_bridge_requested', '1');
-      await openSignUp({
-        forceRedirectUrl: '/login',
-        fallbackRedirectUrl: '/login'
-      });
-    } catch (error) {
-      const errorMessage = error?.errors?.[0]?.message || error?.message || 'Unable to open Clerk sign-up.';
-      setRegisterError(errorMessage);
     }
   };
 
@@ -703,21 +682,10 @@ const Register = ({ onClose }) => {
           )}
 
           {clerkEnabled && (
-            <Box sx={{ mb: 3 }}>
-              <Button
-                variant="contained"
-                color="secondary"
-                fullWidth
-                size="large"
-                sx={{ py: 1.5, borderRadius: 2, mb: 2 }}
-                onClick={handleClerkSignUp}
-              >
-                Continue with Clerk
-              </Button>
-              <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
-                Use Clerk for secure authentication. After signup, you will be redirected to login to complete the account bridge.
-              </Typography>
-            </Box>
+            <ClerkRegisterButton
+              role={formData.role}
+              setRegisterError={setRegisterError}
+            />
           )}
 
           {/* Form */}
@@ -825,3 +793,45 @@ const Register = ({ onClose }) => {
 };
 
 export default Register;
+
+const ClerkRegisterButton = ({ role, setRegisterError }) => {
+  const { openSignUp } = useClerk();
+
+  const handleClerkSignUp = async () => {
+    if (!openSignUp) {
+      setRegisterError('Clerk sign-up is not available right now.');
+      return;
+    }
+
+    try {
+      setRegisterError('');
+      sessionStorage.setItem('voya_clerk_role', role);
+      sessionStorage.setItem('voya_clerk_bridge_requested', '1');
+      await openSignUp({
+        forceRedirectUrl: '/login',
+        fallbackRedirectUrl: '/login'
+      });
+    } catch (error) {
+      const errorMessage = error?.errors?.[0]?.message || error?.message || 'Unable to open Clerk sign-up.';
+      setRegisterError(errorMessage);
+    }
+  };
+
+  return (
+    <Box sx={{ mb: 3 }}>
+      <Button
+        variant="contained"
+        color="secondary"
+        fullWidth
+        size="large"
+        sx={{ py: 1.5, borderRadius: 2, mb: 2 }}
+        onClick={handleClerkSignUp}
+      >
+        Continue with Clerk
+      </Button>
+      <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+        Use Clerk for secure authentication. After signup, you will be redirected to login to complete the account bridge.
+      </Typography>
+    </Box>
+  );
+};

@@ -64,10 +64,21 @@ export const subscribeToPush = async () => {
     // Attempt to get the VAPID key from environment variables
     let vapidKey = process.env.REACT_APP_VAPID_PUBLIC_KEY;
 
-    // Fallback: If Env is missing, try to fetch from your backend (Port 5000)
+    // Fallback: If Env is missing, try to fetch from your backend
     if (!vapidKey || vapidKey === "undefined") {
       console.log("VAPID key not found in Env, attempting to fetch from API...");
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/vapid-public-key`);
+      const getBackendApiBaseUrl = () => {
+        const raw = (process.env.REACT_APP_API_URL || '').trim();
+        if (!raw) return '/api';
+        const normalized = raw.replace(/\/+$|^\/+/, '');
+        if (/^https?:\/\//.test(normalized)) {
+          return normalized.endsWith('/api') ? normalized : `${normalized}/api`;
+        }
+        if (normalized === 'api') return '/api';
+        return normalized.startsWith('api') ? `/${normalized}` : `/${normalized}`;
+      };
+      const baseUrl = getBackendApiBaseUrl();
+      const response = await fetch(`${baseUrl}/vapid-public-key`);
       vapidKey = await response.text();
     }
 
