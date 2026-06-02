@@ -8,10 +8,6 @@ const NotificationManager = () => {
 
   // Logic to register Service Worker
   const registerServiceWorker = async () => {
-    if (process.env.NODE_ENV !== 'production') {
-      return null;
-    }
-
     if (!('serviceWorker' in navigator)) {
       console.warn('Service Workers not supported in this browser');
       return null;

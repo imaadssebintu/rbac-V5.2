@@ -45,15 +45,54 @@ export const requestNotificationPermission = async () => {
   return permission === 'granted';
 };
 
+/**
+ * Resolve the backend API base URL consistently with SocketContext.jsx.
+ * In local dev, use relative /api which the CRA proxy forwards to the backend.
+ * In production, the frontend is served from the same origin as the backend.
+ */
 const getBackendApiBaseUrl = () => {
+  const isLocalFrontend = typeof window !== 'undefined'
+    && ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  const useRemoteApiInLocal = process.env.REACT_APP_USE_REMOTE_API_IN_LOCAL === 'true';
+
+  if (isLocalFrontend && !useRemoteApiInLocal) {
+    return '/api';
+  }
+
   const raw = (process.env.REACT_APP_API_URL || '').trim();
   if (!raw) return '/api';
   const normalized = raw.replace(/\/+$/g, '');
   if (/^https?:\/\//.test(normalized)) {
     return normalized.endsWith('/api') ? normalized : `${normalized}/api`;
   }
-  if (normalized === 'api') return '/api';
-  return normalized.startsWith('api') ? `/${normalized}` : `/${normalized}`;
+  return '/api';
+};
+
+/**
+ * Fetches the VAPID public key from the backend API.
+ * Returns the key string or null on failure.
+ */
+const fetchVapidKeyFromApi = async () => {
+  const baseUrl = getBackendApiBaseUrl();
+  try {
+    const response = await fetch(`${baseUrl}/vapid-public-key`);
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => 'Unable to read response body');
+      console.error(`Failed to load VAPID key from backend: ${response.status} ${response.statusText}`, errorBody);
+      return null;
+    }
+    const key = await response.text();
+    // Safety: Check if we got an invalid response instead of a valid key
+    if (!key || key.includes("<!DOCTYPE") || key.length < 20) {
+      console.error("Push Error: Invalid VAPID key received (likely a 404 or 500 HTML error).");
+      return null;
+    }
+    return key;
+  } catch (err) {
+    // ERR_NAME_NOT_RESOLVED or network error
+    console.error(`Failed to fetch VAPID key from API (${baseUrl}/vapid-public-key):`, err.message || err);
+    return null;
+  }
 };
 
 /**
@@ -72,25 +111,18 @@ export const subscribeToPush = async () => {
     const existingSubscription = await registration.pushManager.getSubscription();
     if (existingSubscription) return existingSubscription;
 
-    // Attempt to get the VAPID key from environment variables
+    // Attempt to get the VAPID key from environment variables first
     let vapidKey = process.env.REACT_APP_VAPID_PUBLIC_KEY;
 
-    // Fallback: If Env is missing, try to fetch from your backend
+    // Fallback: If env var is missing, try to fetch from the backend API
     if (!vapidKey || vapidKey === "undefined") {
-      console.log("VAPID key not found in Env, attempting to fetch from API...");
-      const baseUrl = getBackendApiBaseUrl();
-      const response = await fetch(`${baseUrl}/vapid-public-key`);
-      if (!response.ok) {
-        const errorBody = await response.text().catch(() => 'Unable to read response body');
-        console.error(`Failed to load VAPID key from backend: ${response.status} ${response.statusText}`, errorBody);
-        return null;
-      }
-      vapidKey = await response.text();
+      console.log("VAPID key not found in REACT_APP_VAPID_PUBLIC_KEY env, fetching from API...");
+      vapidKey = await fetchVapidKeyFromApi();
     }
 
-    // Safety: Check if we got an invalid response instead of a valid key
-    if (!vapidKey || vapidKey.includes("<!DOCTYPE") || vapidKey.length < 20) {
-      console.error("Push Error: Invalid VAPID key received (likely a 404 or 500 HTML error).");
+    if (!vapidKey) {
+      console.error("Push Error: No VAPID key available. Push notifications are disabled. " +
+        "Set REACT_APP_VAPID_PUBLIC_KEY in your frontend .env, or configure VAPID_PUBLIC_KEY on the backend.");
       return null;
     }
 
@@ -105,14 +137,19 @@ export const subscribeToPush = async () => {
 
     // Send the subscription object to your backend to store in DB
     const baseUrl = getBackendApiBaseUrl();
-    const subscriptionResponse = await fetch(`${baseUrl}/push-subscribe`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(subscription)
-    });
-    if (!subscriptionResponse.ok) {
-      const errorBody = await subscriptionResponse.text().catch(() => 'Unable to read response body');
-      console.error(`Failed to send push subscription to backend: ${subscriptionResponse.status} ${subscriptionResponse.statusText}`, errorBody);
+    try {
+      const subscriptionResponse = await fetch(`${baseUrl}/push-subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(subscription)
+      });
+      if (!subscriptionResponse.ok) {
+        const errorBody = await subscriptionResponse.text().catch(() => 'Unable to read response body');
+        console.error(`Failed to send push subscription to backend: ${subscriptionResponse.status} ${subscriptionResponse.statusText}`, errorBody);
+        return null;
+      }
+    } catch (err) {
+      console.error(`Failed to send push subscription to backend (${baseUrl}/push-subscribe):`, err.message || err);
       return null;
     }
 

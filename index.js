@@ -171,8 +171,23 @@ app.post('/api/push-subscribe', (req, res) => {
         return res.status(400).json({ success: false, message: 'Invalid push subscription payload' });
     }
 
-    console.log('Received push subscription:', subscription.endpoint);
-    return res.status(201).json({ success: true, message: 'Push subscription received' });
+    // Store the subscription so it can be used for web-push notifications.
+    // In production this would persist to a database; here we keep an
+    // in-memory list keyed by endpoint for simplicity.
+    if (!app.get('pushSubscriptions')) {
+        app.set('pushSubscriptions', []);
+    }
+    const subs = app.get('pushSubscriptions');
+    // Replace any existing subscription with the same endpoint
+    const idx = subs.findIndex(s => s.endpoint === subscription.endpoint);
+    if (idx >= 0) {
+        subs[idx] = subscription;
+    } else {
+        subs.push(subscription);
+    }
+
+    console.log('Received and stored push subscription:', subscription.endpoint);
+    return res.status(201).json({ success: true, message: 'Push subscription stored' });
 });
 
 // Health check endpoint
