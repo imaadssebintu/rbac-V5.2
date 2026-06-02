@@ -165,6 +165,16 @@ app.get('/api/vapid-public-key', (req, res) => {
     res.type('text/plain').send(vapidKey);
 });
 
+app.post('/api/push-subscribe', (req, res) => {
+    const subscription = req.body;
+    if (!subscription || typeof subscription !== 'object' || !subscription.endpoint) {
+        return res.status(400).json({ success: false, message: 'Invalid push subscription payload' });
+    }
+
+    console.log('Received push subscription:', subscription.endpoint);
+    return res.status(201).json({ success: true, message: 'Push subscription received' });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.status(200).json({

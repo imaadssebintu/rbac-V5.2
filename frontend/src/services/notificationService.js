@@ -45,6 +45,17 @@ export const requestNotificationPermission = async () => {
   return permission === 'granted';
 };
 
+const getBackendApiBaseUrl = () => {
+  const raw = (process.env.REACT_APP_API_URL || '').trim();
+  if (!raw) return '/api';
+  const normalized = raw.replace(/\/+$/g, '');
+  if (/^https?:\/\//.test(normalized)) {
+    return normalized.endsWith('/api') ? normalized : `${normalized}/api`;
+  }
+  if (normalized === 'api') return '/api';
+  return normalized.startsWith('api') ? `/${normalized}` : `/${normalized}`;
+};
+
 /**
  * Subscribes the user to the Push Service
  */
@@ -67,16 +78,6 @@ export const subscribeToPush = async () => {
     // Fallback: If Env is missing, try to fetch from your backend
     if (!vapidKey || vapidKey === "undefined") {
       console.log("VAPID key not found in Env, attempting to fetch from API...");
-      const getBackendApiBaseUrl = () => {
-        const raw = (process.env.REACT_APP_API_URL || '').trim();
-        if (!raw) return '/api';
-        const normalized = raw.replace(/\/+$|^\/+/, '');
-        if (/^https?:\/\//.test(normalized)) {
-          return normalized.endsWith('/api') ? normalized : `${normalized}/api`;
-        }
-        if (normalized === 'api') return '/api';
-        return normalized.startsWith('api') ? `/${normalized}` : `/${normalized}`;
-      };
       const baseUrl = getBackendApiBaseUrl();
       const response = await fetch(`${baseUrl}/vapid-public-key`);
       if (!response.ok) {
@@ -103,11 +104,17 @@ export const subscribeToPush = async () => {
     });
 
     // Send the subscription object to your backend to store in DB
-    await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/push-subscribe`, {
+    const baseUrl = getBackendApiBaseUrl();
+    const subscriptionResponse = await fetch(`${baseUrl}/push-subscribe`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(subscription)
     });
+    if (!subscriptionResponse.ok) {
+      const errorBody = await subscriptionResponse.text().catch(() => 'Unable to read response body');
+      console.error(`Failed to send push subscription to backend: ${subscriptionResponse.status} ${subscriptionResponse.statusText}`, errorBody);
+      return null;
+    }
 
     console.log("User successfully subscribed to Push Notifications");
     return subscription;
