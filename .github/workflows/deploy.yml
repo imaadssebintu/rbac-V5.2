@@ -96,8 +96,8 @@ jobs:
 
             echo "=== Build and start containers ==="
             docker compose down || true
-            docker compose build
-            docker compose up -d
+            docker volume rm voya-app_mysql_data || true
+            docker compose up -d --build
 
             echo "=== Cleaning up old images ==="
             docker image prune -f
