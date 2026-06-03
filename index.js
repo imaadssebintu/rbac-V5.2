@@ -13,6 +13,7 @@ import passport from 'passport';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import './models/index.js';
+import seedRoles from './seed/seedRoles.js';
 import notificationService from './services/notification.js';
 import PaymentController from './controllers/payment.js';
 import { setupOAuthProviders } from './services/oauthProviders.js';
@@ -250,8 +251,15 @@ async function startServer() {
         console.log('Database connection established successfully.');
 
         // Keep startup sync safe; alter mode can overflow MySQL key limits over repeated runs.
-           await sequelize.sync();
+        await sequelize.sync();
         console.log('Database synchronized without dropping data.');
+
+        // Seed default roles if missing
+        try {
+            await seedRoles();
+        } catch (seedErr) {
+            console.warn('Role seeding skipped or already done:', seedErr.message);
+        }
 
         const httpServer = http.createServer(app);
 

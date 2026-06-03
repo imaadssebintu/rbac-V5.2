@@ -68,10 +68,9 @@ async function seedRoles() {
             console.log('Default admin user created (email: admin@walkerapp.com, password: Admin123!)');
         }
 
-        process.exit(0);
+        console.log('Role seeding completed successfully!');
     } catch (error) {
         console.error('Error seeding roles:', error);
-        process.exit(1);
     }
 }
 
