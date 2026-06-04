@@ -37,8 +37,16 @@ async function seedRoles() {
             const existingRole = allRoles.find(r => RBAC.normalizeRoleName(r.name) === roleData.name);
 
             if (existingRole) {
-                await existingRole.update({ permissions: roleData.permissions });
-                console.log(`Updated role: ${existingRole.name}`);
+                const oldName = existingRole.name;
+                await existingRole.update({
+                    name: roleData.name,
+                    permissions: roleData.permissions
+                });
+                if (oldName !== roleData.name) {
+                    console.log(`Renamed role: ${oldName} → ${roleData.name}`);
+                } else {
+                    console.log(`Updated role: ${oldName}`);
+                }
             } else {
                 await Role.create(roleData);
                 console.log(`Created role: ${roleData.name}`);

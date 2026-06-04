@@ -65,7 +65,12 @@ class AuthController {
         // 4. Create new user if not found
         if (!user) {
             const normalizedRoleName = RBAC.normalizeRoleName(role_name);
-            const role = await Role.findOne({ where: { name: normalizedRoleName } });
+            let role = await Role.findOne({ where: { name: normalizedRoleName } });
+            if (!role) {
+                // Fallback: find by normalizing existing role names (handles legacy DB)
+                const allRoles = await Role.findAll({ attributes: ['id', 'name'] });
+                role = allRoles.find(r => RBAC.normalizeRoleName(r.name) === normalizedRoleName);
+            }
             if (!role) {
                 throw new Error('Invalid role specified');
             }
@@ -130,9 +135,14 @@ class AuthController {
                 });
             }
 
-            // 3. Get role
+            // 3. Get role — try exact match first, then fallback to normalized lookup
             const normalizedRoleName = RBAC.normalizeRoleName(role_name || 'traveler');
-            const role = await Role.findOne({ where: { name: normalizedRoleName } });
+            let role = await Role.findOne({ where: { name: normalizedRoleName } });
+            if (!role) {
+                // Fallback: find by normalizing existing role names (handles legacy DB)
+                const allRoles = await Role.findAll({ attributes: ['id', 'name'] });
+                role = allRoles.find(r => RBAC.normalizeRoleName(r.name) === normalizedRoleName);
+            }
             if (!role) {
                 return res.status(400).json({ success: false, message: 'Invalid role specified' });
             }
