@@ -82,11 +82,8 @@ const Register = ({ onClose }) => {
 
   const clerkEnabled = !!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
 
-  const roleNameMap = {
-    walker: 'guide',
-    walkee: 'traveler',
-    admin: 'admin'
-  };
+  // Form radio values already use the canonical backend role names.
+  // No mapping needed — pass formData.role directly as role_name.
 
   const steps = ['Basic Information', 'Role & Location', 'Additional Details'];
 
@@ -208,7 +205,7 @@ const Register = ({ onClose }) => {
         email: formData.email,
         password: formData.password,
         phone: formData.phone,
-        role_name: roleNameMap[formData.role] || 'traveler',
+        role_name: formData.role || 'traveler',
         location: formData.location
       };
 

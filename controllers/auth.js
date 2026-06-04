@@ -116,26 +116,44 @@ class AuthController {
         try {
             // 1. Normalize input
             const { name, phone, password, role_name = 'traveler', location } = req.body;
-            const email = req.body.email.toLowerCase().trim();
 
-            // 2. Check if user already exists
+            // 2. Validate required fields early with clear messages
+            const email = typeof req.body.email === 'string' ? req.body.email.toLowerCase().trim() : '';
+            if (!email) {
+                return res.status(400).json({ success: false, message: 'Email is required' });
+            }
+            if (!name || !String(name).trim()) {
+                return res.status(400).json({ success: false, message: 'Name is required' });
+            }
+            if (!phone || !String(phone).trim()) {
+                return res.status(400).json({ success: false, message: 'Phone number is required' });
+            }
+            if (!password || !String(password).trim()) {
+                return res.status(400).json({ success: false, message: 'Password is required' });
+            }
+            if (String(password).length < 6) {
+                return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
+            }
+
+            // 3. Check if user already exists
             const existingEmail = await User.findOne({ where: { email } });
             if (existingEmail) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Email already exists'
+                    message: 'An account with this email already exists. Please try logging in instead.'
                 });
             }
 
-            const existingPhone = await User.findOne({ where: { phone } });
+            const trimmedPhone = String(phone).trim();
+            const existingPhone = await User.findOne({ where: { phone: trimmedPhone } });
             if (existingPhone) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Phone already exists'
+                    message: 'An account with this phone number already exists. Please try logging in instead.'
                 });
             }
 
-            // 3. Get role — try exact match first, then fallback to normalized lookup
+            // 4. Get role — try exact match first, then fallback to normalized lookup
             const normalizedRoleName = RBAC.normalizeRoleName(role_name || 'traveler');
             let role = await Role.findOne({ where: { name: normalizedRoleName } });
             if (!role) {
@@ -147,27 +165,19 @@ class AuthController {
                 return res.status(400).json({ success: false, message: 'Invalid role specified' });
             }
 
-            /**
-             * NOTE: If your models/user.js ALREADY hashes the password in a hook,
-             * you should remove the bcrypt lines below and just pass 'password' to User.create.
-             * I am leaving it here as a safe standard.
-             */
-            //const salt = await bcrypt.genSalt(10);
-           // const hashedPassword = await bcrypt.hash(password, salt);
-
-            // 4. Create user
+            // 5. Create user (password is hashed by the User model beforeCreate hook)
             const user = await User.create({
-                name,
+                name: String(name).trim(),
                 email,
-                phone,
-                password: password,
+                phone: trimmedPhone,
+                password: String(password),
                 role_id: role.id,
-                location,
-                is_active: true, // Ensure users are active by default
+                location: location || null,
+                is_active: true,
                 is_verified: false
             });
 
-            // 5. Generate token
+            // 6. Generate token
             const token = AuthController.generateToken(user, role.name);
 
             await user.update({ last_login: new Date() });
@@ -181,6 +191,17 @@ class AuthController {
             });
         } catch (error) {
             console.error("SIGNUP ERROR:", error);
+
+            // Handle Sequelize validation errors with clear messages
+            if (error.name === 'SequelizeValidationError') {
+                const details = error.errors.map(e => e.message).join(', ');
+                return res.status(400).json({ success: false, message: `Validation failed: ${details}` });
+            }
+            if (error.name === 'SequelizeUniqueConstraintError') {
+                const field = error.errors[0]?.path || 'field';
+                return res.status(400).json({ success: false, message: `An account with this ${field} already exists.` });
+            }
+
             next(error);
         }
     }
@@ -188,8 +209,17 @@ class AuthController {
     static async login(req, res, next) {
         try {
             // 1. Normalize input
-            const identifier = req.body.email.toLowerCase().trim();
+            const identifier = typeof req.body.email === 'string'
+                ? req.body.email.toLowerCase().trim()
+                : (typeof req.body.phone === 'string' ? req.body.phone.trim() : '');
             const { password } = req.body;
+
+            if (!identifier) {
+                return res.status(400).json({ success: false, message: 'Email or phone number is required' });
+            }
+            if (!password) {
+                return res.status(400).json({ success: false, message: 'Password is required' });
+            }
 
             // 2. Find user with Role by Email OR Phone
             const user = await User.findOne({
@@ -231,7 +261,7 @@ class AuthController {
                 message: 'Login successful',
                 token,
                 user: user.getSafeData(),
-                redirect: RBAC.getRoleBasedRedirect(user.Role.name)
+                redirect: RBAC.getRoleBasedRedirect(user.Role?.name)
             });
         } catch (error) {
             console.error("LOGIN ERROR:", error);
