@@ -254,6 +254,22 @@ async function startServer() {
         await sequelize.sync();
         console.log('Database synchronized without dropping data.');
 
+        // Run safe column migrations (adds missing columns without alter: true)
+        try {
+            const [results] = await sequelize.query(`SHOW COLUMNS FROM \`User\` LIKE 'auth_provider'`);
+            if (results.length === 0) {
+                console.log('Migrating User table: adding auth_provider and auth_provider_id columns...');
+                await sequelize.query(
+                    `ALTER TABLE \`User\`
+                     ADD COLUMN \`auth_provider\` VARCHAR(50) NULL,
+                     ADD COLUMN \`auth_provider_id\` VARCHAR(255) NULL`
+                );
+                console.log('User table migration complete.');
+            }
+        } catch (migrateErr) {
+            console.warn('Column migration skipped or already applied:', migrateErr.message);
+        }
+
         // Seed default roles if missing
         try {
             await seedRoles();

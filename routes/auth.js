@@ -162,17 +162,48 @@ router.post('/logout', authenticate, (req, res) => {
     res.json({ success: true, message: 'Logged out' });
 });
 
-// 5. Verify - A simple inline check to replace the broken verify call
+// 5. Verify - Returns the same flattened shape as /me (fallback endpoint)
 router.get('/verify', authenticate, async (req, res) => {
-    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0');
+    try {
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
 
-    await recordUserVisit(req, req.user, 'auth_verify');
-    res.json({
-        success: true,
-        user: req.user
-    });
+        const user = await User.findByPk(req.user.id, {
+            include: User.includeRole(),
+            attributes: { exclude: ['password'] }
+        });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        await recordUserVisit(req, user, 'auth_verify');
+
+        res.json({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            role: user.Role?.name,
+            bio: user.bio,
+            location: user.location,
+            social_links: user.social_links,
+            is_verified: user.is_verified,
+            is_active: user.is_active,
+            wallet_balance: user.wallet_balance,
+            profile_image: user.profile_image,
+            profilePicture: user.profile_image,
+            certificateUrl: user.certificateUrl,
+            isVerified: Boolean(user.isVerified),
+            is_certified: user.is_certified,
+            certifications: user.certifications,
+            gallery: user.gallery || []
+        });
+    } catch (error) {
+        console.error('GET /verify ERROR:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
 });
 
 export default router;
