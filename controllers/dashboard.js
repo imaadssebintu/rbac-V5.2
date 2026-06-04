@@ -6,6 +6,7 @@ import { Op, fn, col, literal } from 'sequelize';
 import Role from '../models/role.js';
 import Announcement from '../models/announcement.js';
 import AuditLog from '../models/auditLog.js';
+import RBAC from '../rbac.js';
 import sequelize from '../db.js';
 
 class DashboardController {
@@ -584,7 +585,7 @@ class DashboardController {
             };
 
             // Get role-specific stats
-            if (user.Role.name === 'Walker') {
+            if (RBAC.normalizeRoleName(user.Role.name) === 'guide') {
                 const [taskStats, paymentStats, ratingStats] = await Promise.all([
                     Task.findAll({
                         where: {
@@ -637,7 +638,7 @@ class DashboardController {
                         ratedTasks: ratingStats[0]?.rated_tasks || 0
                     }
                 };
-            } else if (user.Role.name === 'Walkee') {
+            } else if (RBAC.normalizeRoleName(user.Role.name) === 'traveler') {
                 const [taskStats, paymentStats, ratingStats] = await Promise.all([
                     Task.findAll({
                         where: {
@@ -687,7 +688,7 @@ class DashboardController {
                         ratedTasks: ratingStats[0]?.rated_tasks || 0
                     }
                 };
-            } else if (user.Role.name === 'Admin') {
+            } else if (RBAC.normalizeRoleName(user.Role.name) === 'admin') {
                 // Admin stats
                 const [userCount, taskCount, paymentCount] = await Promise.all([
                     User.count(),

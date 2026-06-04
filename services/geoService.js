@@ -14,7 +14,7 @@ class GeoService {
     static async findNearbyWalkers(location, radius = 5000, limit = 10) {
         try {
             const Role = await import('../models/role.js');
-            const walkerRole = await Role.default.findOne({ where: { name: 'Walker' } });
+            const walkerRole = await Role.default.findOne({ where: { name: 'guide' } });
 
             if (!walkerRole) {
                 return [];
@@ -125,7 +125,7 @@ class GeoService {
     static async getWalkersInArea(boundingBox) {
         try {
             const Role = await import('../models/role.js');
-            const walkerRole = await Role.default.findOne({ where: { name: 'Walker' } });
+            const walkerRole = await Role.default.findOne({ where: { name: 'guide' } });
 
             if (!walkerRole) {
                 return [];

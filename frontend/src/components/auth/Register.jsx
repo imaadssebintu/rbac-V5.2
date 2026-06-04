@@ -83,9 +83,9 @@ const Register = ({ onClose }) => {
   const clerkEnabled = !!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
 
   const roleNameMap = {
-    walker: 'Walker',
-    walkee: 'Walkee',
-    admin: 'Admin'
+    walker: 'guide',
+    walkee: 'traveler',
+    admin: 'admin'
   };
 
   const steps = ['Basic Information', 'Role & Location', 'Additional Details'];

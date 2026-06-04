@@ -7,9 +7,9 @@ async function seedRoles() {
     console.log('🔍 Checking if roles exist...');
     
     const roles = [
-      { name: 'Admin', description: 'Administrator' },
-      { name: 'Walker', description: 'Service provider' },
-      { name: 'Walkee', description: 'Customer' }
+      { name: 'admin', description: 'Administrator' },
+      { name: 'guide', description: 'Service provider' },
+      { name: 'traveler', description: 'Customer' }
     ];
 
     for (const roleData of roles) {
@@ -18,7 +18,7 @@ async function seedRoles() {
         await Role.create({
           ...roleData,
           permissions: JSON.stringify({}),
-          is_default: roleData.name === 'Walkee'
+          is_default: roleData.name === 'traveler'
         });
         console.log(`✅ Created role: ${roleData.name}`);
       } else {

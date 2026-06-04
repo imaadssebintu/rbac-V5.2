@@ -456,7 +456,7 @@ class Scheduler {
             today.setHours(0, 0, 0, 0);
 
             // Get admin users
-            const adminRole = await Role.findOne({ where: { name: 'Admin' } });
+            const adminRole = await Role.findOne({ where: { name: 'admin' } });
             const admins = await User.findAll({
                 where: {
                     role_id: adminRole.id,
@@ -717,8 +717,7 @@ class Scheduler {
 
             // Update walker ratings based on recent tasks
             const walkers = await User.findAll({
-                where: {
-                    role_id: (await import('../models/role.js').then(m => m.default.findOne({ where: { name: 'Walker' } }))).id
+                where: {                        role_id: (await import('../models/role.js').then(m => m.default.findOne({ where: { name: 'guide' } }))).id
                 },
                 attributes: ['id']
             });
@@ -763,8 +762,7 @@ class Scheduler {
 
             // Get walkers with wallet balance
             const walkers = await User.findAll({
-                where: {
-                    role_id: (await import('../models/role.js').then(m => m.default.findOne({ where: { name: 'Walker' } }))).id,
+                where: {                        role_id: (await import('../models/role.js').then(m => m.default.findOne({ where: { name: 'guide' } }))).id,
                     wallet_balance: { [Op.gt]: 0 }
                 },
                 attributes: ['id', 'name', 'email', 'wallet_balance', 'preferred_currency']

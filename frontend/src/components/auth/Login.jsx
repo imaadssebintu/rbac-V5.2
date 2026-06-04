@@ -33,9 +33,9 @@ const Login = ({ initialRole = null }) => {
   const [oauthProviders, setOauthProviders] = useState([]);
 
   const roleNameMap = {
-    walker: 'Walker',
-    walkee: 'Walkee',
-    admin: 'Admin'
+    walker: 'guide',
+    walkee: 'traveler',
+    admin: 'admin'
   };
 
   useEffect(() => {

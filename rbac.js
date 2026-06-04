@@ -25,15 +25,15 @@ class RBAC {
     }
 
     static async isAdmin(userId) {
-        return this.hasRole(userId, 'Admin');
+        return this.hasRole(userId, 'admin');
     }
 
     static async isWalker(userId) {
-        return this.hasRole(userId, 'Walker');
+        return this.hasRole(userId, 'guide');
     }
 
     static async isWalkee(userId) {
-        return this.hasRole(userId, 'Walkee');
+        return this.hasRole(userId, 'traveler');
     }
 
     static async hasRole(userId, roleName) {
@@ -50,12 +50,12 @@ class RBAC {
     }
 
     static getRoleBasedRedirect(role) {
-        switch (role) {
-            case 'Admin':
+        switch (this.normalizeRoleName(role)) {
+            case 'admin':
                 return '/admin/dashboard';
-            case 'Walker':
+            case 'guide':
                 return '/walker/dashboard';
-            case 'Walkee':
+            case 'traveler':
                 return '/walkee/dashboard';
             default:
                 return '/';
@@ -64,23 +64,23 @@ class RBAC {
 
     static getDefaultPermissions(roleName) {
         const permissions = {
-            Admin: [
+            admin: [
                 'view_all_users', 'edit_all_users', 'delete_users',
                 'manage_roles', 'view_all_tasks', 'manage_payments',
                 'view_analytics', 'send_broadcast_messages',
                 'manage_system_settings', 'export_data'
             ],
-            Walker: [
+            guide: [
                 'view_assigned_tasks', 'update_task_status',
                 'start_walk_session', 'end_walk_session',
                 'view_earnings', 'update_location', 'send_messages',
                 'view_walk_history', 'update_availability',
-                'rate_walkee', 'view_task_details'
+                'rate_traveler', 'view_task_details'
             ],
-            Walkee: [
+            traveler: [
                 'create_tasks', 'view_my_tasks', 'pay_for_tasks',
-                'rate_walker', 'cancel_tasks', 'view_walk_history',
-                'send_messages', 'view_walker_profiles',
+                'rate_guide', 'cancel_tasks', 'view_walk_history',
+                'send_messages', 'view_guide_profiles',
                 'edit_own_profile', 'manage_payment_methods'
             ]
         };
@@ -124,7 +124,8 @@ class RBAC {
             if (!user || !user.Role) return false;
 
             // Admin can do everything
-            if (user.Role.name === 'Admin') return true;
+            const normalizedRole = this.normalizeRoleName(user.Role.name);
+            if (normalizedRole === 'admin') return true;
 
             const userPermissions = user.Role.permissions || [];
             const requiredPermission = `${action}_${resource}`;
@@ -138,10 +139,10 @@ class RBAC {
 
     static normalizeRoleName(roleName) {
         const raw = String(roleName || '').trim().toLowerCase();
-        if (['admin', 'administrator', 'superadmin'].includes(raw)) return 'Admin';
-        if (['walker', 'guide', 'escort'].includes(raw)) return 'Walker';
-        if (['walkee', 'traveler', 'traveller', 'customer', 'client'].includes(raw)) return 'Walkee';
-        return raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : '';
+        if (['admin', 'administrator', 'superadmin'].includes(raw)) return 'admin';
+        if (['walker', 'guide', 'escort'].includes(raw)) return 'guide';
+        if (['walkee', 'traveler', 'traveller', 'customer', 'client'].includes(raw)) return 'traveler';
+        return raw || '';
     }
 
     static validatePermissionFormat(permission) {

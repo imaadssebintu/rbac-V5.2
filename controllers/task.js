@@ -4,6 +4,7 @@ import Role from '../models/role.js';
 import Payment from '../models/payment.js';
 import Message from '../models/message.js';
 import GuideTask from '../models/guideTask.js';
+import RBAC from '../rbac.js';
 import * as geolib from 'geolib';
 import { Op } from 'sequelize';
 
@@ -465,7 +466,7 @@ class TaskController {
 
     static async getWalkerRoleId() {
         // Cache this in production
-        const role = await Role.findOne({ where: { name: 'Walker' } });
+        const role = await Role.findOne({ where: { name: 'guide' } });
         return role ? role.id : null;
     }
 
@@ -868,9 +869,10 @@ class TaskController {
             const where = {};
 
             if (user_id) {
-                if (role === 'Walker') {
-                    // Walker scope is applied later to include both claimed and available nearby tasks.
-                } else if (role === 'Walkee') {
+                const normalizedRole = RBAC.normalizeRoleName(role);
+                if (normalizedRole === 'guide') {
+                    // Guide scope is applied later to include both claimed and available nearby tasks.
+                } else if (normalizedRole === 'traveler') {
                     where.walkee_id = user_id;
                 }
             }
@@ -880,7 +882,7 @@ class TaskController {
             }
 
             let scopedTaskIds = null;
-            if (user_id && role === 'Walker') {
+            if (user_id && RBAC.normalizeRoleName(role) === 'guide') {
                 const availableGuideTasks = await GuideTask.findAll({
                     where: {
                         guide_id: user_id,

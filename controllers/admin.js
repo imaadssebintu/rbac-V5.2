@@ -6,7 +6,7 @@ class AdminController {
         try {
             const { id } = req.params;
 
-            const walkerRole = await Role.findOne({ where: { name: 'Walker' } });
+            const walkerRole = await Role.findOne({ where: { name: 'guide' } });
             if (!walkerRole) {
                 return res.status(500).json({ success: false, message: 'Guide role is not configured' });
             }

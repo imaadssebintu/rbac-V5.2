@@ -46,7 +46,7 @@ export const submitWithdrawalRequest = async (req, res) => {
     }
 
     // Accept both 'walker' (legacy) and 'guide' as the guide role
-    if (!['Walker'].includes(RBAC.normalizeRoleName(user?.Role?.name))) {
+    if (!['guide'].includes(RBAC.normalizeRoleName(user?.Role?.name))) {
       return res.status(403).json({
         success: false,
         message: 'Only guides can submit withdrawal requests'
@@ -203,7 +203,7 @@ export const processWithdrawalRequest = async (req, res) => {
     const admin = await User.findByPk(adminId, {
       include: User.includeRole(['name'])
     });
-    if (!admin || RBAC.normalizeRoleName(admin?.Role?.name) !== 'Admin') {
+    if (!admin || RBAC.normalizeRoleName(admin?.Role?.name) !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'Admin access required'
@@ -431,7 +431,7 @@ export const cancelWithdrawalRequest = async (req, res) => {
     }
 
     // Only allow guide to cancel their own pending requests, or admin to cancel any
-    if (userRole === 'Admin' || (withdrawalRequest.guide_id === userId && withdrawalRequest.status === 'pending')) {
+    if (userRole === 'admin' || (withdrawalRequest.guide_id === userId && withdrawalRequest.status === 'pending')) {
       withdrawalRequest.status = 'cancelled';
       await withdrawalRequest.save();
 

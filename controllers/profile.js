@@ -3,6 +3,7 @@ import Task from '../models/task.js';
 import Payment from '../models/payment.js';
 import Role from '../models/role.js';
 import bcrypt from 'bcryptjs';
+import RBAC from '../rbac.js';
 import { fn, col } from 'sequelize';
 import path from 'path';
 import fs from 'fs';
@@ -386,7 +387,7 @@ class ProfileController {
                 });
             }
 
-            const isAdmin = req.user?.Role?.name === 'Admin';
+            const isAdmin = RBAC.normalizeRoleName(req.user?.Role?.name) === 'admin';
             const isSelf = req.user?.id === targetUser.id;
 
             if (!isAdmin && !isSelf) {
@@ -398,7 +399,7 @@ class ProfileController {
             }
 
             const roleName = targetUser.Role?.name;
-            if (roleName !== 'Walker') {
+            if (RBAC.normalizeRoleName(roleName) !== 'guide') {
                 console.warn(`[UploadCertification] Invalid role for certification - user_id: ${user_id}, role: ${roleName}`);
                 return res.status(400).json({
                     success: false,
@@ -466,7 +467,7 @@ class ProfileController {
                 });
             }
 
-            const isAdmin = req.user?.Role?.name === 'Admin';
+            const isAdmin = RBAC.normalizeRoleName(req.user?.Role?.name) === 'admin';
             const isSelf = req.user?.id === targetUser.id;
             if (!isAdmin && !isSelf) {
                 return res.status(403).json({
@@ -538,7 +539,7 @@ class ProfileController {
                 });
             }
 
-            if (targetUser.Role?.name !== 'Walker') {
+            if (RBAC.normalizeRoleName(targetUser.Role?.name) !== 'guide') {
                 return res.status(400).json({
                     success: false,
                     message: 'Certification only applies to guides'
@@ -711,7 +712,7 @@ class ProfileController {
                 });
             }
 
-            const isAdmin = req.user?.Role?.name === 'Admin';
+            const isAdmin = RBAC.normalizeRoleName(req.user?.Role?.name) === 'admin';
             const isSelf = req.user?.id === user.id;
             if (!isAdmin && !isSelf) {
                 return res.status(403).json({
@@ -784,7 +785,7 @@ class ProfileController {
             // Get role-based stats
             const role = await user.getRole();
 
-            if (role.name === 'Walker') {
+            if (RBAC.normalizeRoleName(role.name) === 'guide') {
                 const [taskStats, paymentStats] = await Promise.all([
                     Task.findAll({
                         where: { walker_id: user_id },
@@ -815,7 +816,7 @@ class ProfileController {
                     avg_rating: taskStats[0]?.avg_rating || 0,
                     total_paid: paymentStats[0]?.total_paid || 0
                 };
-            } else if (role.name === 'Walkee') {
+            } else if (RBAC.normalizeRoleName(role.name) === 'traveler') {
                 const [taskStats, paymentStats] = await Promise.all([
                     Task.findAll({
                         where: { walkee_id: user_id },

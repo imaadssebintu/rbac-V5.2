@@ -9,9 +9,9 @@ const CALLBACK_BASE = (process.env.BACKEND_PUBLIC_URL || `http://localhost:${pro
 
 const roleFromState = (rawState) => {
   const value = String(rawState || '').toLowerCase();
-  if (value === 'admin') return 'Admin';
-  if (value === 'walker' || value === 'guide') return 'Walker';
-  return 'Walkee';
+  if (value === 'admin') return 'admin';
+  if (value === 'walker' || value === 'guide') return 'guide';
+  return 'traveler';
 };
 
 const normalizeProfile = (provider, req, profile) => {

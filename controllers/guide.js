@@ -8,7 +8,7 @@ class GuideController {
             const { page = 1, limit = 20, certified, search } = req.query;
             const offset = (page - 1) * limit;
 
-            const roleRecord = await Role.findOne({ where: { name: 'Walker' } });
+            const roleRecord = await Role.findOne({ where: { name: 'guide' } });
             if (!roleRecord) {
                 return res.status(404).json({
                     success: false,
@@ -69,7 +69,7 @@ class GuideController {
         try {
             const { id } = req.params;
 
-            const roleRecord = await Role.findOne({ where: { name: 'Walker' } });
+            const roleRecord = await Role.findOne({ where: { name: 'guide' } });
             if (!roleRecord) {
                 return res.status(404).json({
                     success: false,

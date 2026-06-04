@@ -8,7 +8,7 @@ import Message from '../models/message.js';
 
 class TravellerController {
     static async notifyAdmins(req, content, metadata = {}) {
-        const adminRole = await Role.findOne({ where: { name: 'Admin' } });
+        const adminRole = await Role.findOne({ where: { name: 'admin' } });
         if (!adminRole) {
             return;
         }

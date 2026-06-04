@@ -527,9 +527,9 @@ class NotificationService {
 
                         <p>You can now:</p>
                         <ul>
-                            ${user.Role?.name === 'Walkee' ? '<li>📝 Book walking services</li><li>📍 Set pickup and destination locations</li><li>💳 Make secure payments</li><li>⭐ Rate your walkers</li>' : ''}
-                            ${user.Role?.name === 'Walker' ? '<li>👣 Accept walking tasks</li><li>💰 Earn money for your services</li><li>📊 Track your earnings</li><li>⭐ Build your reputation</li>' : ''}
-                            ${user.Role?.name === 'Admin' ? '<li>👥 Manage users and roles</li><li>📊 View system analytics</li><li>⚙️ Configure system settings</li><li>🔒 Manage permissions</li>' : ''}
+                            ${['walkee', 'traveler'].includes(String(user.Role?.name || '').toLowerCase()) ? '<li>📝 Book walking services</li><li>📍 Set pickup and destination locations</li><li>💳 Make secure payments</li><li>⭐ Rate your walkers</li>' : ''}
+                            ${['walker', 'guide'].includes(String(user.Role?.name || '').toLowerCase()) ? '<li>👣 Accept walking tasks</li><li>💰 Earn money for your services</li><li>📊 Track your earnings</li><li>⭐ Build your reputation</li>' : ''}
+                            ${['admin', 'administrator'].includes(String(user.Role?.name || '').toLowerCase()) ? '<li>👥 Manage users and roles</li><li>📊 View system analytics</li><li>⚙️ Configure system settings</li><li>🔒 Manage permissions</li>' : ''}
                             <li>👤 Manage your profile and preferences</li>
                             <li>📱 Use our mobile-friendly platform</li>
                         </ul>

@@ -110,7 +110,7 @@ class AuthController {
     static async signup(req, res, next) {
         try {
             // 1. Normalize input
-            const { name, phone, password, role_name = 'Walkee', location } = req.body;
+            const { name, phone, password, role_name = 'traveler', location } = req.body;
             const email = req.body.email.toLowerCase().trim();
 
             // 2. Check if user already exists
@@ -131,7 +131,7 @@ class AuthController {
             }
 
             // 3. Get role
-            const normalizedRoleName = RBAC.normalizeRoleName(role_name || 'Walkee');
+            const normalizedRoleName = RBAC.normalizeRoleName(role_name || 'traveler');
             const role = await Role.findOne({ where: { name: normalizedRoleName } });
             if (!role) {
                 return res.status(400).json({ success: false, message: 'Invalid role specified' });
@@ -231,7 +231,7 @@ class AuthController {
 
     static async socialLogin(req, res, next) {
         try {
-            const { provider, providerId, email, name, phone, role_name = 'Walkee' } = req.body;
+            const { provider, providerId, email, name, phone, role_name = 'traveler' } = req.body;
 
             if (!provider || !email) {
                 return res.status(400).json({

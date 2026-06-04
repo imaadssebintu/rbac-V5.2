@@ -12,44 +12,43 @@ async function seedRoles() {
 
         const defaultRoles = [
             {
-                name: 'Admin',
+                name: 'admin',
                 description: 'System administrator with full access',
-                permissions: RBAC.getDefaultPermissions('Admin'),
+                permissions: RBAC.getDefaultPermissions('admin'),
                 is_default: false
             },
             {
-                name: 'Walker',
-                description: 'Service provider who walks people',
-                permissions: RBAC.getDefaultPermissions('Walker'),
+                name: 'guide',
+                description: 'Service provider who guides travelers',
+                permissions: RBAC.getDefaultPermissions('guide'),
                 is_default: false
             },
             {
-                name: 'Walkee',
-                description: 'Customer who needs walking service',
-                permissions: RBAC.getDefaultPermissions('Walkee'),
+                name: 'traveler',
+                description: 'Customer who needs guiding service',
+                permissions: RBAC.getDefaultPermissions('traveler'),
                 is_default: true
             }
         ];
 
         for (const roleData of defaultRoles) {
-            const [role, created] = await Role.findOrCreate({
-                where: { name: roleData.name },
-                defaults: roleData
-            });
+            // Find existing role by normalized name to avoid duplicates
+            const allRoles = await Role.findAll();
+            const existingRole = allRoles.find(r => RBAC.normalizeRoleName(r.name) === roleData.name);
 
-            if (created) {
-                console.log(`Created role: ${role.name}`);
+            if (existingRole) {
+                await existingRole.update({ permissions: roleData.permissions });
+                console.log(`Updated role: ${existingRole.name}`);
             } else {
-                // Update permissions if role exists
-                await role.update({ permissions: roleData.permissions });
-                console.log(`Updated role: ${role.name}`);
+                await Role.create(roleData);
+                console.log(`Created role: ${roleData.name}`);
             }
         }
 
         console.log('Role seeding completed successfully!');
 
         // Create a default admin user if not exists
-        const adminRole = await Role.findOne({ where: { name: 'Admin' } });
+        const adminRole = await Role.findOne({ where: { name: 'admin' } });
 
         const existingAdmin = await User.findOne({ where: { email: 'admin@walkerapp.com' } });
         if (!existingAdmin && adminRole) {
