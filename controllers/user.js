@@ -52,11 +52,7 @@ class UserController {
             const { id } = req.params;
 
             const user = await User.findByPk(id, {
-                include: [{
-                    model: Role,
-                    as: 'Role',
-                    attributes: ['name', 'description', 'permissions']
-                }],
+                include: User.includeRole(['name', 'description', 'permissions']),
                 attributes: { exclude: ['password'] }
             });
 

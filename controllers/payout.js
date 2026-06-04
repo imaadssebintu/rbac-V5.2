@@ -3,13 +3,12 @@ import User from '../models/user.js';
 import Wallet from '../models/wallet.js';
 import Role from '../models/role.js';
 import Payment from '../models/payment.js';
+import RBAC from '../rbac.js';
 import { Op } from 'sequelize';
 
 const getFlutterwaveBaseUrl = () => 'https://api.flutterwave.com';
 
 const getFlutterwaveSecretKey = () => process.env.FLW_SECRET_KEY || process.env.FLUTTERWAVE_SECRET_KEY;
-
-const normalizeRoleName = (roleName) => String(roleName || '').trim().toLowerCase();
 
 /**
  * Submit a withdrawal request (Guide)
@@ -37,11 +36,7 @@ export const submitWithdrawalRequest = async (req, res) => {
 
     // Check if user exists and is a guide
     const user = await User.findByPk(userId, {
-      include: [{
-        model: Role,
-        as: 'Role',
-        attributes: ['name']
-      }]
+      include: User.includeRole(['name'])
     });
     if (!user) {
       return res.status(404).json({
@@ -51,7 +46,7 @@ export const submitWithdrawalRequest = async (req, res) => {
     }
 
     // Accept both 'walker' (legacy) and 'guide' as the guide role
-    if (!['walker', 'guide'].includes(normalizeRoleName(user?.Role?.name))) {
+    if (!['Walker'].includes(RBAC.normalizeRoleName(user?.Role?.name))) {
       return res.status(403).json({
         success: false,
         message: 'Only guides can submit withdrawal requests'
@@ -206,13 +201,9 @@ export const processWithdrawalRequest = async (req, res) => {
 
     // Verify admin
     const admin = await User.findByPk(adminId, {
-      include: [{
-        model: Role,
-        as: 'Role',
-        attributes: ['name']
-      }]
+      include: User.includeRole(['name'])
     });
-    if (!admin || normalizeRoleName(admin?.Role?.name) !== 'admin') {
+    if (!admin || RBAC.normalizeRoleName(admin?.Role?.name) !== 'Admin') {
       return res.status(403).json({
         success: false,
         message: 'Admin access required'
@@ -428,7 +419,7 @@ export const cancelWithdrawalRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
     const userId = req.user?.id;
-    const userRole = normalizeRoleName(req.user?.Role?.name || req.user?.role);
+    const userRole = RBAC.normalizeRoleName(req.user?.Role?.name || req.user?.role);
 
     const withdrawalRequest = await WithdrawalRequest.findByPk(requestId);
 
@@ -440,7 +431,7 @@ export const cancelWithdrawalRequest = async (req, res) => {
     }
 
     // Only allow guide to cancel their own pending requests, or admin to cancel any
-    if (userRole === 'admin' || (withdrawalRequest.guide_id === userId && withdrawalRequest.status === 'pending')) {
+    if (userRole === 'Admin' || (withdrawalRequest.guide_id === userId && withdrawalRequest.status === 'pending')) {
       withdrawalRequest.status = 'cancelled';
       await withdrawalRequest.save();
 

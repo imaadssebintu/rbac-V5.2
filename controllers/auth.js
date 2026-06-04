@@ -6,11 +6,12 @@ import RBAC from "../rbac.js";
 import { Op } from "sequelize";
 
 class AuthController {
-    static normalizeRoleName(roleName) {
-        const raw = String(roleName || 'Walkee').toLowerCase();
-        if (raw === 'admin') return 'Admin';
-        if (raw === 'walker' || raw === 'guide') return 'Walker';
-        return 'Walkee';
+    static generateToken(user, roleName) {
+        return jwt.sign(
+            { id: user.id, email: user.email, role: roleName || user.Role?.name },
+            process.env.JWT_SECRET || 'your-secret-key',
+            { expiresIn: '7d' }
+        );
     }
 
     static getSyntheticEmail(provider, providerId) {
@@ -33,17 +34,37 @@ class AuthController {
     static async findOrCreateSocialUser({ provider, providerId, email, name, phone, role_name }) {
         const normalizedEmail = email?.toLowerCase().trim() || AuthController.getSyntheticEmail(provider, providerId);
 
-        let user = await User.findOne({
-            where: { email: normalizedEmail },
-            include: [{
-                model: Role,
-                as: 'Role',
-                attributes: ['name', 'permissions']
-            }]
-        });
+        // 1. Look up by provider+providerId first (deduplication)
+        let user = null;
+        if (provider && providerId) {
+            user = await User.findOne({
+                where: {
+                    auth_provider: provider,
+                    auth_provider_id: String(providerId)
+                },
+                include: User.includeRole()
+            });
+        }
 
+        // 2. Fall back to email lookup
         if (!user) {
-            const normalizedRoleName = AuthController.normalizeRoleName(role_name);
+            user = await User.findOne({
+                where: { email: normalizedEmail },
+                include: User.includeRole()
+            });
+
+            // 3. Found by email but missing provider info — link provider to existing user
+            if (user && provider && providerId) {
+                await user.update({
+                    auth_provider: provider,
+                    auth_provider_id: String(providerId)
+                });
+            }
+        }
+
+        // 4. Create new user if not found
+        if (!user) {
+            const normalizedRoleName = RBAC.normalizeRoleName(role_name);
             const role = await Role.findOne({ where: { name: normalizedRoleName } });
             if (!role) {
                 throw new Error('Invalid role specified');
@@ -67,16 +88,14 @@ class AuthController {
                 phone: finalPhone,
                 password: randomPassword,
                 role_id: role.id,
+                auth_provider: provider || null,
+                auth_provider_id: providerId ? String(providerId) : null,
                 is_active: true,
                 is_verified: true
             });
 
             user = await User.findByPk(user.id, {
-                include: [{
-                    model: Role,
-                    as: 'Role',
-                    attributes: ['name', 'permissions']
-                }]
+                include: User.includeRole()
             });
         }
 
@@ -112,7 +131,7 @@ class AuthController {
             }
 
             // 3. Get role
-            const normalizedRoleName = AuthController.normalizeRoleName(role_name || 'Walkee');
+            const normalizedRoleName = RBAC.normalizeRoleName(role_name || 'Walkee');
             const role = await Role.findOne({ where: { name: normalizedRoleName } });
             if (!role) {
                 return res.status(400).json({ success: false, message: 'Invalid role specified' });
@@ -129,7 +148,7 @@ class AuthController {
             // 4. Create user
             const user = await User.create({
                 name,
-                email:email.toLowerCase().trim(),
+                email,
                 phone,
                 password: password,
                 role_id: role.id,
@@ -139,11 +158,7 @@ class AuthController {
             });
 
             // 5. Generate token
-            const token = jwt.sign(
-                { id: user.id, email: user.email, role: role.name },
-                process.env.JWT_SECRET || 'your-secret-key',
-                { expiresIn: '7d' }
-            );
+            const token = AuthController.generateToken(user, role.name);
 
             await user.update({ last_login: new Date() });
 
@@ -174,11 +189,7 @@ class AuthController {
                         { phone: identifier }
                     ]
                 },
-                include: [{
-                    model: Role,
-                    as: 'Role',
-                    attributes: ['name', 'permissions']
-                }]
+                include: User.includeRole()
             });
 
             // Debugging log for your terminal
@@ -201,11 +212,7 @@ class AuthController {
             }
 
             // 5. Success - Generate Token
-            const token = jwt.sign(
-                { id: user.id, email: user.email, role: user.Role.name },
-                process.env.JWT_SECRET || 'your-secret-key',
-                { expiresIn: '7d' }
-            );
+            const token = AuthController.generateToken(user);
 
             await user.update({ last_login: new Date() });
 
@@ -224,7 +231,7 @@ class AuthController {
 
     static async socialLogin(req, res, next) {
         try {
-            const { provider, email, name, phone, role_name = 'Walkee' } = req.body;
+            const { provider, providerId, email, name, phone, role_name = 'Walkee' } = req.body;
 
             if (!provider || !email) {
                 return res.status(400).json({
@@ -235,18 +242,14 @@ class AuthController {
 
             const user = await AuthController.findOrCreateSocialUser({
                 provider,
-                providerId: null,
+                providerId: providerId || `${provider}_${Date.now()}`,
                 email,
                 name,
                 phone,
                 role_name
             });
 
-            const token = jwt.sign(
-                { id: user.id, email: user.email, role: user.Role?.name },
-                process.env.JWT_SECRET || 'your-secret-key',
-                { expiresIn: '7d' }
-            );
+            const token = AuthController.generateToken(user);
 
             res.json({
                 success: true,

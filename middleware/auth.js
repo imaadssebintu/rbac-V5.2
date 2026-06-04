@@ -1,14 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from '../models/user.js';
-import Role from '../models/role.js';
-
-const normalizeRoleLabel = (roleName) => {
-    const raw = String(roleName || '').trim().toLowerCase();
-    if (['admin', 'administrator', 'superadmin'].includes(raw)) return 'admin';
-    if (['walker', 'guide', 'escort'].includes(raw)) return 'walker';
-    if (['walkee', 'traveler', 'traveller', 'customer', 'client'].includes(raw)) return 'walkee';
-    return raw;
-};
+import RBAC from '../rbac.js';
 
 const authenticate = async (req, res, next) => {
     try {
@@ -24,11 +16,7 @@ const authenticate = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
 
         const user = await User.findByPk(decoded.id, {
-            include: [{
-                model: Role,
-                as: 'Role',
-                attributes: ['name', 'permissions']
-            }]
+            include: User.includeRole()
         });
 
         if (!user || !user.is_active) {
@@ -62,7 +50,7 @@ const authenticate = async (req, res, next) => {
 const authorize = (...roles) => {
     // Handle case where roles are passed as an array
     const allowedRoles = Array.isArray(roles[0]) ? roles[0] : roles;
-    const normalizedAllowedRoles = allowedRoles.map((role) => normalizeRoleLabel(role));
+    const normalizedAllowedRoles = allowedRoles.map((role) => RBAC.normalizeRoleName(role));
 
     return (req, res, next) => {
         if (!req.user) {
@@ -72,7 +60,7 @@ const authorize = (...roles) => {
             });
         }
 
-        const userRole = normalizeRoleLabel(req.user?.Role?.name);
+        const userRole = RBAC.normalizeRoleName(req.user?.Role?.name);
         if (!normalizedAllowedRoles.includes(userRole)) {
             return res.status(403).json({
                 success: false,

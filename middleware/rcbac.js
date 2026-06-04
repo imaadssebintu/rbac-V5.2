@@ -1,14 +1,10 @@
-import Role from '../models/role.js';
 import User from '../models/user.js';
 
 class RBAC {
     static async hasPermission(userId, requiredPermissions) {
         try {
             const user = await User.findByPk(userId, {
-                include: [{
-                    model: Role,
-                    attributes: ['name', 'permissions']
-                }]
+                include: User.includeRole()
             });
 
             if (!user || !user.Role) {
@@ -42,10 +38,7 @@ class RBAC {
     static async hasRole(userId, roleName) {
         try {
             const user = await User.findByPk(userId, {
-                include: [{
-                    model: Role,
-                    attributes: ['name']
-                }]
+                include: User.includeRole(['name'])
             });
 
             return user && user.Role && user.Role.name === roleName;

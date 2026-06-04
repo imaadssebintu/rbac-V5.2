@@ -69,11 +69,7 @@ class ProfileController {
 
             const user = await User.findByPk(user_id, {
                 attributes: { exclude: ['password'] },
-                include: [{
-                    model: Role,
-                    as: 'Role',
-                    attributes: ['name', 'description']
-                }]
+                include: User.includeRole(['name', 'description'])
             });
 
             if (!user) {
@@ -379,11 +375,7 @@ class ProfileController {
             });
 
             const targetUser = await User.findByPk(user_id, {
-                include: [{
-                    model: Role,
-                    as: 'Role',
-                    attributes: ['name']
-                }]
+                include: User.includeRole(['name'])
             });
 
             if (!targetUser) {
@@ -464,11 +456,7 @@ class ProfileController {
             const { user_id, cert_id } = req.params;
 
             const targetUser = await User.findByPk(user_id, {
-                include: [{
-                    model: Role,
-                    as: 'Role',
-                    attributes: ['name']
-                }]
+                include: User.includeRole(['name'])
             });
 
             if (!targetUser) {
@@ -540,11 +528,7 @@ class ProfileController {
             const { is_certified } = req.body;
 
             const targetUser = await User.findByPk(user_id, {
-                include: [{
-                    model: Role,
-                    as: 'Role',
-                    attributes: ['name']
-                }]
+                include: User.includeRole(['name'])
             });
 
             if (!targetUser) {

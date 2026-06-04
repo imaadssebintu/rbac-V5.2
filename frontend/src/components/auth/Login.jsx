@@ -137,7 +137,7 @@ const Login = ({ initialRole = null }) => {
       });
 
       if (user) {
-        const normalizedRole = (user.role || '').toLowerCase();
+        const normalizedRole = (user.Role?.name || user.role || '').toLowerCase();
         if (role && normalizedRole && normalizedRole !== role) {
           logout();
           setLoginError('Selected role does not match your account. Please choose the correct role.');

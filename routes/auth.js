@@ -100,11 +100,7 @@ router.get('/oauth/:provider/callback', (req, res, next) => {
                 role_name: socialProfile.role_name
             });
 
-            const token = jwt.sign(
-                { id: user.id, email: user.email, role: user.Role?.name },
-                process.env.JWT_SECRET || 'your-secret-key',
-                { expiresIn: '7d' }
-            );
+            const token = AuthController.generateToken(user);
 
             return res.redirect(`${FRONTEND_URL}/login?oauth=success&token=${encodeURIComponent(token)}`);
         } catch (callbackError) {
@@ -125,11 +121,7 @@ router.get('/me', authenticate, async (req, res) => {
         res.set('Expires', '0');
 
         const user = await User.findByPk(req.user.id, {
-            include: [{
-                model: Role,
-                as: 'Role',
-                attributes: ['name', 'permissions']
-            }],
+            include: User.includeRole(),
             attributes: { exclude: ['password'] }
         });
 
@@ -155,7 +147,6 @@ router.get('/me', authenticate, async (req, res) => {
             profilePicture: user.profile_image,
             certificateUrl: user.certificateUrl,
             isVerified: Boolean(user.isVerified),
-            is_verified: Boolean(user.isVerified),
             is_certified: user.is_certified,
             certifications: user.certifications,
             gallery: user.gallery || []
@@ -166,14 +157,10 @@ router.get('/me', authenticate, async (req, res) => {
     }
 });
 
-// 4. Logout - Check if AuthController.logout actually exists
-if (AuthController.logout) {
-    router.post('/logout', authenticate, AuthController.logout);
-} else {
-    router.post('/logout', authenticate, (req, res) => {
-        res.json({ success: true, message: 'Logged out' });
-    });
-}
+// 4. Logout
+router.post('/logout', authenticate, (req, res) => {
+    res.json({ success: true, message: 'Logged out' });
+});
 
 // 5. Verify - A simple inline check to replace the broken verify call
 router.get('/verify', authenticate, async (req, res) => {

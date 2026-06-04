@@ -167,6 +167,14 @@ const User = sequelize.define('User', {
         type: DataTypes.BOOLEAN,
         defaultValue: true
     },
+    auth_provider: {
+        type: DataTypes.STRING(50),
+        allowNull: true
+    },
+    auth_provider_id: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
     last_login: {
         type: DataTypes.DATE,
         allowNull: true
@@ -187,6 +195,15 @@ const User = sequelize.define('User', {
         }
     }
 });
+
+// Static helper to include Role association
+User.includeRole = function(attributes = ['name', 'permissions']) {
+    return [{
+        model: Role,
+        as: 'Role',
+        attributes
+    }];
+};
 
 // Instance method to check password
 User.prototype.checkPassword = async function(password) {

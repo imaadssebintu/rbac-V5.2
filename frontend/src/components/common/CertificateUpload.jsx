@@ -107,10 +107,6 @@ const CertificateUpload = ({ onUploadSuccess, onError }) => {
       setError(null);
       setSuccess(null);
 
-      const formData = new FormData();
-      formData.append('certificate', file);
-      formData.append('name', name.trim());
-
       const response = await certificateAPI.uploadCertificate(file, name.trim());
 
       setSuccess('Certificate uploaded successfully! It is now pending verification.');

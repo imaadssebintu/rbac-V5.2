@@ -94,16 +94,10 @@ export const profileAPI = {
   getById: (id) => API.get(`/profile/${id}`),
   update: (id, updates) => API.put(`/profile/${id}`, updates),
   deleteProfileImage: (id) => API.delete(`/profile/${id}/image`),
-  uploadCertificate: (id, file, name) => {
-    const formData = new FormData();
-    formData.append('certificate', file);
-    if (name) {
-      formData.append('name', name);
-    }
-    return API.post(`/profile/${id}/certifications`, formData, {
+  uploadCertificate: (id, file, name) =>
+    API.post(`/profile/${id}/certifications`, buildCertificateFormData(file, name), {
       headers: { 'Content-Type': 'multipart/form-data' }
-    });
-  },
+    }),
   certify: (id, isCertified) => API.put(`/profile/${id}/certify`, { is_certified: isCertified }),
   uploadGalleryImage: (id, file) => {
     const formData = new FormData();
@@ -211,6 +205,16 @@ export const complaintAPI = {
   create: (payload) => API.post('/complaints', payload)
 };
 
+// Shared helper to build certificate upload FormData
+const buildCertificateFormData = (file, name) => {
+  const formData = new FormData();
+  formData.append('certificate', file);
+  if (name) {
+    formData.append('name', name);
+  }
+  return formData;
+};
+
 export const adminAPI = {
   getLogs: () => API.get('/dashboard/admin/logs'),
   backupDatabase: () => API.get('/dashboard/admin/backup', { responseType: 'blob' }),
@@ -223,16 +227,10 @@ export const adminAPI = {
 
 // Certificate endpoints
 export const certificateAPI = {
-  uploadCertificate: (file, name) => {
-    const formData = new FormData();
-    formData.append('certificate', file);
-    if (name) {
-      formData.append('name', name);
-    }
-    return API.post('/certificates/upload', formData, {
+  uploadCertificate: (file, name) =>
+    API.post('/certificates/upload', buildCertificateFormData(file, name), {
       headers: { 'Content-Type': 'multipart/form-data' }
-    });
-  },
+    }),
   getMyCertificates: () => API.get('/certificates/my'),
   getCertificateById: (id) => API.get(`/certificates/${id}`),
   // Admin endpoints

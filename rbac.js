@@ -5,10 +5,7 @@ class RBAC {
     static async hasPermission(userId, requiredPermissions) {
         try {
             const user = await User.findByPk(userId, {
-                include: [{
-                    model: Role,
-                    attributes: ['name', 'permissions']
-                }]
+                include: User.includeRole()
             });
 
             if (!user || !user.Role) {
@@ -42,10 +39,7 @@ class RBAC {
     static async hasRole(userId, roleName) {
         try {
             const user = await User.findByPk(userId, {
-                include: [{
-                    model: Role,
-                    attributes: ['name']
-                }]
+                include: User.includeRole(['name'])
             });
 
             return user && user.Role && user.Role.name === roleName;
@@ -97,10 +91,7 @@ class RBAC {
     static async getUserRole(userId) {
         try {
             const user = await User.findByPk(userId, {
-                include: [{
-                    model: Role,
-                    attributes: ['name', 'permissions']
-                }]
+                include: User.includeRole()
             });
 
             return user?.Role?.name || null;
@@ -127,10 +118,7 @@ class RBAC {
     static async canPerformAction(userId, action, resource) {
         try {
             const user = await User.findByPk(userId, {
-                include: [{
-                    model: Role,
-                    attributes: ['name', 'permissions']
-                }]
+                include: User.includeRole()
             });
 
             if (!user || !user.Role) return false;
@@ -146,6 +134,14 @@ class RBAC {
             console.error('RBAC action check error:', error);
             return false;
         }
+    }
+
+    static normalizeRoleName(roleName) {
+        const raw = String(roleName || '').trim().toLowerCase();
+        if (['admin', 'administrator', 'superadmin'].includes(raw)) return 'Admin';
+        if (['walker', 'guide', 'escort'].includes(raw)) return 'Walker';
+        if (['walkee', 'traveler', 'traveller', 'customer', 'client'].includes(raw)) return 'Walkee';
+        return raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : '';
     }
 
     static validatePermissionFormat(permission) {

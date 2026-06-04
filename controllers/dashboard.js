@@ -73,10 +73,7 @@ class DashboardController {
                 User.findAll({
                     limit: 10,
                     order: [['last_login', 'DESC'], ['created_at', 'DESC']],
-                    include: [{
-                        model: Role,
-                        attributes: ['name']
-                    }],
+                    include: User.includeRole(['name']),
                     attributes: ['id', 'name', 'email', 'phone', 'created_at', 'last_login', 'is_active']
                 }),
 
@@ -558,10 +555,7 @@ class DashboardController {
             const { user_id } = req.params;
 
             const user = await User.findByPk(user_id, {
-                include: [{
-                    model: Role,
-                    attributes: ['name']
-                }]
+                include: User.includeRole(['name'])
             });
 
             if (!user) {
