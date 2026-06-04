@@ -57,7 +57,7 @@ const Register = ({ onClose }) => {
     phone: '',
 
     // Step 2: Role & Location
-    role: 'walkee',
+    role: 'traveler',
     location: '',
 
     // Step 3: Additional Info
@@ -153,7 +153,7 @@ const Register = ({ onClose }) => {
         break;
 
       case 2: // Additional Info
-        if (formData.role === 'walker' && !formData.experience) {
+        if (formData.role === 'guide' && !formData.experience) {
           newErrors.experience = 'Please specify your experience';
         }
 
@@ -208,7 +208,7 @@ const Register = ({ onClose }) => {
         email: formData.email,
         password: formData.password,
         phone: formData.phone,
-        role_name: roleNameMap[formData.role] || 'Walkee',
+        role_name: roleNameMap[formData.role] || 'traveler',
         location: formData.location
       };
 
@@ -397,7 +397,7 @@ const Register = ({ onClose }) => {
                 sx={{ justifyContent: 'space-around' }}
               >
                 <FormControlLabel
-                  value="walkee"
+                  value="traveler"
                   control={<Radio />}
                   label={
                     <Box sx={{ textAlign: 'center' }}>
@@ -411,7 +411,7 @@ const Register = ({ onClose }) => {
                   sx={{ flexDirection: 'column', alignItems: 'center' }}
                 />
                 <FormControlLabel
-                  value="walker"
+                  value="guide"
                   control={<Radio />}
                   label={
                     <Box sx={{ textAlign: 'center' }}>
@@ -481,7 +481,7 @@ const Register = ({ onClose }) => {
             />
 
             {/* Traveler fields */}
-            {formData.role === 'walkee' && (
+            {formData.role === 'traveler' && (
               <>
                 <TextField
                   fullWidth
@@ -519,7 +519,7 @@ const Register = ({ onClose }) => {
             )}
 
             {/* Guide fields */}
-            {formData.role === 'walker' && (
+            {formData.role === 'guide' && (
               <>
                 <TextField
                   fullWidth

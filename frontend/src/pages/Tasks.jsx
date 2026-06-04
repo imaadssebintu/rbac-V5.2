@@ -90,12 +90,12 @@ const Tasks = () => {
     setLoading(true);
     try {
       let response;
-      if (normalizedRole === 'walker') {
+      if (normalizedRole === 'guide') {
         // Guides see all available tasks
         response = await taskAPI.getAll(); 
       } else {
         // Travelers see their own tasks
-        response = await taskAPI.getUserTasks(user?.id, 'Walkee');
+        response = await taskAPI.getUserTasks(user?.id, 'traveler');
       }
       const data = response.data?.tasks || response.data || [];
       setTasks(data);
@@ -240,21 +240,21 @@ const Tasks = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4">
-          {normalizedRole === 'walker' ? 'Available Guide Requests' : 'My Guide Requests'}
+          {normalizedRole === 'guide' ? 'Available Guide Requests' : 'My Guide Requests'}
         </Typography>
         <Button
           variant="contained"
           startIcon={<Add />}
           sx={{ borderRadius: 2 }}
           onClick={() => {
-            if (normalizedRole === 'walker') {
+            if (normalizedRole === 'guide') {
               setActiveTab(0);
             } else {
               setOpenCreateDialog(true);
             }
           }}
         >
-          {normalizedRole === 'walker' ? 'Find Trips' : 'Request Guide'}
+          {normalizedRole === 'guide' ? 'Find Trips' : 'Request Guide'}
         </Button>
       </Box>
 

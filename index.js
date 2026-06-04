@@ -43,6 +43,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Security middleware - Configure Helmet with cross-origin resource policy
+// Trust proxy for rate limiting behind Nginx/reverse proxy
+app.set('trust proxy', 1);
+
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
   crossOriginOpenerPolicy: false,

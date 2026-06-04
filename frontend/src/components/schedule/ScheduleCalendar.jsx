@@ -33,7 +33,7 @@ import { scheduleAPI } from '../../services/api';
 const ScheduleCalendar = ({ userId: propUserId, role: propRole }) => {
   const { user } = useAuth();
   const userId = propUserId || user?.id;
-  const role = propRole || (user?.role || 'walkee').toLowerCase();
+  const role = propRole || (user?.role || 'traveler').toLowerCase();
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [schedules, setSchedules] = useState([]);

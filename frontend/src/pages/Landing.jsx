@@ -52,7 +52,7 @@ const Landing = ({ initialAuthMode }) => {
   const [langMenuEl, setLangMenuEl] = useState(null);
   const [themeMenuEl, setThemeMenuEl] = useState(null);
   const [authMode, setAuthMode] = useState(null);
-  const [authRole, setAuthRole] = useState('walkee');
+  const [authRole, setAuthRole] = useState('traveler');
   const [settingsPromptOpen, setSettingsPromptOpen] = useState(false);
   const [storyDialogOpen, setStoryDialogOpen] = useState(false);
   const [activeStory, setActiveStory] = useState(null);
@@ -937,7 +937,7 @@ const Landing = ({ initialAuthMode }) => {
               <MenuItem
                 onClick={() => {
                   setLoginMenuEl(null);
-                  setAuthRole('walkee');
+                  setAuthRole('traveler');
                   handleOpenAuth('login');
                 }}
               >
@@ -946,7 +946,7 @@ const Landing = ({ initialAuthMode }) => {
               <MenuItem
                 onClick={() => {
                   setLoginMenuEl(null);
-                  setAuthRole('walker');
+                  setAuthRole('guide');
                   handleOpenAuth('login');
                 }}
               >

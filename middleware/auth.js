@@ -82,6 +82,13 @@ const checkPermission = (permission) => {
                 });
             }
 
+            if (!req.user.Role || !Array.isArray(req.user.Role.permissions)) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'No role or permissions assigned'
+                });
+            }
+
             const hasPermission = req.user.Role.permissions.includes(permission);
 
             if (!hasPermission) {

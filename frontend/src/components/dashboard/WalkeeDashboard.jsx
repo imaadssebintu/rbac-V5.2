@@ -501,7 +501,7 @@ const WalkeeDashboard = () => {
       }
 
       if (typeof taskAPI.getUserTasks === 'function' && user?.id) {
-        const tasksResponse = await taskAPI.getUserTasks(user.id, 'Walkee');
+        const tasksResponse = await taskAPI.getUserTasks(user.id, 'traveler');
         const tasks = tasksResponse.data?.tasks || tasksResponse.data || [];
         const upcoming = tasks.filter((task) => {
           if (isPaymentRequired(task)) return true;

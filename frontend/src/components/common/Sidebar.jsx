@@ -48,7 +48,7 @@ const Sidebar = ({ open, onClose, mobile = false }) => {
   const { user, logout } = useAuth();
   const { isDarkMode } = useTheme();
   const role = (user?.role || '').toLowerCase();
-  const roleLabel = role === 'walker' ? 'Guide' : role === 'walkee' ? 'Traveler' : (user?.role || 'User');
+  const roleLabel = role === 'guide' ? 'Guide' : role === 'traveler' ? 'Traveler' : (user?.role || 'User');
 
   const [expanded, setExpanded] = useState({
     walker: false,
@@ -71,7 +71,7 @@ const Sidebar = ({ open, onClose, mobile = false }) => {
     { path: ROUTES.SETTINGS, label: 'Settings', icon: <Settings /> }
   ];
 
-  const walkerItems = role === 'walker' ? [
+  const walkerItems = role === 'guide' ? [
     { path: '/guide/earnings', label: 'Earnings', icon: <Payment /> },
     { path: '/guide/clients', label: 'Travelers', icon: <Group /> },
     { path: '/guide/availability', label: 'Availability', icon: <CalendarToday /> },
@@ -148,7 +148,7 @@ const Sidebar = ({ open, onClose, mobile = false }) => {
           <Chip
             label={roleLabel}
             size="small"
-            color={user?.role === 'admin' ? 'error' : user?.role === 'walker' ? 'primary' : 'secondary'}
+            color={user?.role === 'admin' ? 'error' : user?.role === 'guide' ? 'primary' : 'secondary'}
             sx={{ mt: 0.5 }}
           />
         </Box>

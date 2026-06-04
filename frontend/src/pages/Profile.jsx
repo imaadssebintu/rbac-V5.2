@@ -84,10 +84,10 @@ const Profile = () => {
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryUploading, setGalleryUploading] = useState(false);
   const role = (user?.role || '').toLowerCase();
-  const isGuide = role === 'walker';
+  const isGuide = role === 'guide';
   const isGuideVerified = Boolean(user?.isVerified || user?.is_verified);
   const verifiedCertificateUrl = resolveAssetUrl(user?.certificateUrl || '');
-  const roleLabel = role === 'walker' ? 'Guide' : role === 'walkee' ? 'Traveler' : user?.role;
+  const roleLabel = role === 'guide' ? 'Guide' : role === 'traveler' ? 'Traveler' : user?.role;
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     bio: user?.bio || '',

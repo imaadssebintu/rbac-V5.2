@@ -5,8 +5,8 @@ export const APP_VERSION = '1.0.0';
 // User roles
 export const USER_ROLES = {
   ADMIN: 'admin',
-  WALKER: 'walker',
-  WALKEE: 'walkee'
+  WALKER: 'guide',
+  WALKEE: 'traveler'
 };
 
 // Task status

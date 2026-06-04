@@ -348,7 +348,7 @@ const WalkerDashboard = () => {
       let data = [];
 
       if (typeof taskAPI.getUserTasks === 'function' && user?.id) {
-        const scopedResponse = await taskAPI.getUserTasks(user.id, 'Walker');
+        const scopedResponse = await taskAPI.getUserTasks(user.id, 'guide');
         data = scopedResponse.data?.tasks || scopedResponse.data || [];
       }
 

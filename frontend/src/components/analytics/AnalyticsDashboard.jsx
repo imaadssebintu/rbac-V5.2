@@ -121,9 +121,9 @@ const AnalyticsDashboard = ({ userId, role }) => {
 
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <InputLabel>View As</InputLabel>
-            <Select value="walker" label="View As">
-              <MenuItem value="walker">Guide</MenuItem>
-              <MenuItem value="walkee">Traveler</MenuItem>
+            <Select value="guide" label="View As">
+              <MenuItem value="guide">Guide</MenuItem>
+              <MenuItem value="traveler">Traveler</MenuItem>
             </Select>
           </FormControl>
         </Box>

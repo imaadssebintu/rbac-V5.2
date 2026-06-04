@@ -33,7 +33,7 @@ const PaymentsAuthDebug = () => {
   const callSocial = async () => {
     setResult(null); setError(null);
     try {
-      const payload = { provider: social.provider, email: social.email, name: social.name, phone: social.phone, role_name: 'Walkee' };
+      const payload = { provider: social.provider, email: social.email, name: social.name, phone: social.phone, role_name: 'traveler' };
       setResult({ request: payload });
       const res = await authAPI.socialLogin(payload);
       setResult(prev => ({ ...prev, response: res.data, status: res.status, headers: res.headers }));

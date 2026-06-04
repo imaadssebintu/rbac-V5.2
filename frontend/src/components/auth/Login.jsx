@@ -23,7 +23,7 @@ const Login = ({ initialRole = null }) => {
 
   // State Management
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [role, setRole] = useState(initialRole || 'walkee');
+  const [role, setRole] = useState(initialRole || 'traveler');
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -164,7 +164,7 @@ const Login = ({ initialRole = null }) => {
       return;
     }
 
-    const selectedRole = roleNameMap[role] || 'walkee';
+    const selectedRole = roleNameMap[role] || 'traveler';
     window.location.href = `${API_BASE_URL}/auth/oauth/${provider}?role=${encodeURIComponent(selectedRole)}`;
   };
 
@@ -220,8 +220,8 @@ const Login = ({ initialRole = null }) => {
                   onChange={(e) => setRole(e.target.value)}
                   size="small"
                 >
-                  <MenuItem value="walkee">Traveler</MenuItem>
-                  <MenuItem value="walker">Guide</MenuItem>
+                  <MenuItem value="traveler">Traveler</MenuItem>
+                  <MenuItem value="guide">Guide</MenuItem>
                   <MenuItem value="admin">Admin</MenuItem>
                 </Select>
               </FormControl>
@@ -366,7 +366,7 @@ const ClerkLoginSection = ({ role, roleNameMap, completeOAuthLogin, navigate, se
           provider,
           email,
           name,
-          role_name: roleNameMap[role] || 'walkee'
+          role_name: roleNameMap[role] || 'traveler'
         });
 
         const token = response.data?.token;

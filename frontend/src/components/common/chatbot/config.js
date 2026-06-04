@@ -4,8 +4,8 @@ const botName = 'Voya Assistant';
 
 const createRoleLabel = (role) => {
   const normalized = String(role || '').toLowerCase();
-  if (normalized === 'walker') return 'guide';
-  if (normalized === 'walkee') return 'traveler';
+  if (normalized === 'guide') return 'guide';
+  if (normalized === 'traveler') return 'traveler';
   return 'user';
 };
 

@@ -24,10 +24,10 @@ class ActionProvider {
 
   filterOwnTasks(tasks, userId, role) {
     if (!userId) return [];
-    if (role === 'walker') {
+    if (role === 'guide') {
       return tasks.filter((task) => String(task.walker_id) === String(userId));
     }
-    if (role === 'walkee') {
+    if (role === 'traveler') {
       return tasks.filter((task) => String(task.walkee_id) === String(userId));
     }
     return [];
@@ -35,7 +35,7 @@ class ActionProvider {
 
   async fetchOwnTasks() {
     const { userId, role } = this.getUserContext();
-    if (!userId || !['walker', 'walkee'].includes(role)) {
+    if (!userId || !['guide', 'traveler'].includes(role)) {
       return { role, tasks: [], unavailable: true };
     }
 
@@ -81,7 +81,7 @@ class ActionProvider {
       const active = tasks.filter((task) => ['pending', 'assigned', 'in_progress'].includes(task.status));
       const completed = tasks.filter((task) => task.status === 'completed').length;
       const cancelled = tasks.filter((task) => task.status === 'cancelled').length;
-      const roleLabel = role === 'walker' ? 'guide' : 'traveler';
+      const roleLabel = role === 'guide' ? 'guide' : 'traveler';
 
       const text = active.length === 0
         ? `No active ${roleLabel} tasks right now. Completed: ${completed}, Cancelled: ${cancelled}.`
@@ -108,7 +108,7 @@ class ActionProvider {
         return;
       }
 
-      if (role === 'walkee') {
+      if (role === 'traveler') {
         if (active.status === 'pending' && !active.is_approved) {
           this.addMessageToState(this.createChatBotMessage('Next step: wait for admin approval, then proceed with payment when prompted.'));
           return;
@@ -125,7 +125,7 @@ class ActionProvider {
         }
       }
 
-      if (role === 'walker') {
+      if (role === 'guide') {
         if (active.status === 'assigned') {
           this.addMessageToState(this.createChatBotMessage('Next step: open your dashboard map, head to pickup, then start the task when near the traveler.'));
           return;

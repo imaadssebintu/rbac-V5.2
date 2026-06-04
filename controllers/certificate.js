@@ -1,5 +1,6 @@
 import Certificate from '../models/certificate.js';
 import User from '../models/user.js';
+import RBAC from '../rbac.js';
 import { Op } from 'sequelize';
 
 // Upload certificate for authenticated user
@@ -120,7 +121,7 @@ export const getCertificateById = async (req, res, next) => {
         }
 
         // Users can only view their own certificates unless they're admin
-        const isAdmin = req.user?.role === 'admin';
+        const isAdmin = RBAC.normalizeRoleName(req.user?.Role?.name) === 'admin';
         if (!isAdmin && certificate.user_id !== userId) {
             return res.status(403).json({
                 success: false,
@@ -157,7 +158,7 @@ export const verifyCertificate = async (req, res, next) => {
         const adminId = req.user?.id;
 
         // Verify admin role
-        if (req.user?.role !== 'admin') {
+        if (RBAC.normalizeRoleName(req.user?.Role?.name) !== 'admin') {
             return res.status(403).json({
                 success: false,
                 message: 'Forbidden - Admin access required'
@@ -225,7 +226,7 @@ export const verifyCertificate = async (req, res, next) => {
 export const getAllCertificates = async (req, res, next) => {
     try {
         // Verify admin role
-        if (req.user?.role !== 'admin') {
+        if (RBAC.normalizeRoleName(req.user?.Role?.name) !== 'admin') {
             return res.status(403).json({
                 success: false,
                 message: 'Forbidden - Admin access required'
@@ -279,7 +280,7 @@ export const getAllCertificates = async (req, res, next) => {
 export const getPendingCertificatesCount = async (req, res, next) => {
     try {
         // Verify admin role
-        if (req.user?.role !== 'admin') {
+        if (RBAC.normalizeRoleName(req.user?.Role?.name) !== 'admin') {
             return res.status(403).json({
                 success: false,
                 message: 'Forbidden - Admin access required'
@@ -306,7 +307,7 @@ export const deleteCertificate = async (req, res, next) => {
         const { id } = req.params;
 
         // Verify admin role
-        if (req.user?.role !== 'admin') {
+        if (RBAC.normalizeRoleName(req.user?.Role?.name) !== 'admin') {
             return res.status(403).json({
                 success: false,
                 message: 'Forbidden - Admin access required'

@@ -1,6 +1,6 @@
 import { sequelize } from '../db.js';
 import Role from '../models/role.js';
-import RBAC from '../middleware/rcbac.js';
+import RBAC from '../rbac.js';
 import User from '../models/user.js';
 import bcrypt from 'bcryptjs';
 
