@@ -14,16 +14,32 @@ const resolveAssetUrl = (url) => {
   }
 };
 
+const normalizeRoleName = (roleName) => {
+  const raw = String(roleName || '').toLowerCase().trim();
+  if (['admin', 'administrator', 'superadmin'].includes(raw)) return 'admin';
+  if (['walker', 'guide', 'escort'].includes(raw)) return 'guide';
+  if (['walkee', 'traveler', 'traveller', 'customer', 'client'].includes(raw)) return 'traveler';
+  return raw;
+};
+
 const normalizeUserMedia = (user) => {
   if (!user || typeof user !== 'object') {
     return user;
   }
 
   const normalizedImage = resolveAssetUrl(user.profile_image || user.profilePicture);
+  
+  // Normalize the role name from the Role association (handles legacy names like Walkee, traveller, Walker)
+  const normalizedRole = user.Role?.name ? normalizeRoleName(user.Role.name) : null;
+  
   return {
     ...user,
     profile_image: normalizedImage || user.profile_image || null,
-    profilePicture: normalizedImage || user.profilePicture || null
+    profilePicture: normalizedImage || user.profilePicture || null,
+    Role: user.Role ? {
+      ...user.Role,
+      name: normalizedRole || user.Role.name
+    } : user.Role
   };
 };
 
@@ -45,7 +61,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
 
       // Guard against a hanging backend by racing the request against a timeout
-      const timeoutMs = 3000; // 3 seconds
+      const timeoutMs = 10000; // 10 seconds — increased from 3s to prevent false logouts on slow connections
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Auth request timed out')), timeoutMs)
       );
