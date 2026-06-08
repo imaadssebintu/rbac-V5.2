@@ -390,50 +390,49 @@ const Register = ({ onClose }) => {
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                row
-                sx={{ justifyContent: 'space-around' }}
+                sx={{ flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-around' }}
               >
                 <FormControlLabel
                   value="traveler"
                   control={<Radio />}
                   label={
                     <Box sx={{ textAlign: 'center' }}>
-                      <Public sx={{ fontSize: 40, mb: 1 }} />
-                      <Typography>Traveler</Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Public sx={{ fontSize: { xs: 28, md: 40 }, mb: 0.5 }} />
+                      <Typography sx={{ fontSize: { xs: '0.85rem', md: '1rem' } }}>Traveler</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
                         Find trusted local guidance
                       </Typography>
                     </Box>
                   }
-                  sx={{ flexDirection: 'column', alignItems: 'center' }}
+                  sx={{ flexDirection: 'column', alignItems: 'center', mx: { xs: 0, sm: 1 } }}
                 />
                 <FormControlLabel
                   value="guide"
                   control={<Radio />}
                   label={
                     <Box sx={{ textAlign: 'center' }}>
-                      <VerifiedUser sx={{ fontSize: 40, mb: 1 }} />
-                      <Typography>Guide</Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <VerifiedUser sx={{ fontSize: { xs: 28, md: 40 }, mb: 0.5 }} />
+                      <Typography sx={{ fontSize: { xs: '0.85rem', md: '1rem' } }}>Guide</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
                         Support visitors with local expertise
                       </Typography>
                     </Box>
                   }
-                  sx={{ flexDirection: 'column', alignItems: 'center' }}
+                  sx={{ flexDirection: 'column', alignItems: 'center', mx: { xs: 0, sm: 1 } }}
                 />
                 <FormControlLabel
                   value="admin"
                   control={<Radio />}
                   label={
                     <Box sx={{ textAlign: 'center' }}>
-                      <Security sx={{ fontSize: 40, mb: 1 }} />
-                      <Typography>Admin</Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Security sx={{ fontSize: { xs: 28, md: 40 }, mb: 0.5 }} />
+                      <Typography sx={{ fontSize: { xs: '0.85rem', md: '1rem' } }}>Admin</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
                         Manage teams and compliance
                       </Typography>
                     </Box>
                   }
-                  sx={{ flexDirection: 'column', alignItems: 'center' }}
+                  sx={{ flexDirection: 'column', alignItems: 'center', mx: { xs: 0, sm: 1 } }}
                 />
               </RadioGroup>
               {errors.role && <FormHelperText>{errors.role}</FormHelperText>}
@@ -647,23 +646,23 @@ const Register = ({ onClose }) => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+    <Container maxWidth="md" sx={{ py: { xs: 3, md: 6 } }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: { xs: 2, md: 4 } }}>
         <Box sx={{ textAlign: 'center' }}>
-          <Groups sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
+          <Groups sx={{ fontSize: { xs: 40, md: 60 }, color: 'primary.main', mb: 1.5 }} />
+          <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.5rem', md: '2.125rem' } }}>
             Join <Box component="span" sx={{ fontWeight: 800 }}>Voya</Box>
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
             Create your account in 3 simple steps
           </Typography>
         </Box>
       </Box>
 
-      <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-        <CardContent sx={{ p: 4 }}>
+      <Card sx={{ borderRadius: 3, boxShadow: { xs: 1, md: 3 } }}>
+        <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
           {/* Stepper */}
-          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+          <Stepper activeStep={activeStep} sx={{ mb: { xs: 2, md: 4 }, '& .MuiStepLabel-label': { fontSize: { xs: '0.7rem', md: '0.875rem' } }, '& .MuiStepIcon-root': { fontSize: { xs: '1.2rem', md: '1.5rem' } } }}>
             {steps.map((label) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>
@@ -690,12 +689,13 @@ const Register = ({ onClose }) => {
             {renderStepContent(activeStep)}
 
             {/* Navigation Buttons */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', sm: 'row' }, justifyContent: 'space-between', mt: 4, gap: { xs: 1.5, sm: 0 } }}>
               <Button
                 variant="outlined"
                 startIcon={<ArrowBack />}
                 onClick={handleBack}
                 disabled={activeStep === 0 || loading}
+                sx={{ width: { xs: '100%', sm: 'auto' } }}
               >
                 Back
               </Button>
@@ -705,6 +705,7 @@ const Register = ({ onClose }) => {
                 variant="contained"
                 endIcon={activeStep === steps.length - 1 ? null : <ArrowForward />}
                 disabled={loading}
+                sx={{ width: { xs: '100%', sm: 'auto' } }}
               >
                 {loading
                   ? 'Processing...'
@@ -717,7 +718,7 @@ const Register = ({ onClose }) => {
           </form>
 
           {/* Login Link */}
-          <Box sx={{ mt: 4, textAlign: 'center' }}>
+          <Box sx={{ mt: { xs: 2, md: 4 }, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
               Already have an account?{' '}
               <Link
@@ -748,37 +749,37 @@ const Register = ({ onClose }) => {
       </Card>
 
       {/* Role Benefits */}
-      <Card sx={{ mt: 3, borderRadius: 3, bgcolor: 'info.light' }}>
-        <CardContent>
-          <Typography variant="subtitle2" gutterBottom>
+      <Card sx={{ mt: { xs: 2, md: 3 }, borderRadius: 3, bgcolor: 'info.light' }}>
+        <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+          <Typography variant="subtitle2" gutterBottom sx={{ fontSize: { xs: '0.85rem', md: '0.875rem' } }}>
             🎯 Why join <Box component="span" sx={{ fontWeight: 700 }}>Voya</Box>?
           </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="caption" component="div">
+          <Grid container spacing={1}>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="caption" component="div" sx={{ fontWeight: 600, fontSize: { xs: '0.72rem', md: '0.75rem' } }}>
                 ✅ For Guides:
               </Typography>
-              <Typography variant="caption" component="div">
+              <Typography variant="caption" component="div" sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
                 • Earn income supporting travelers
               </Typography>
-              <Typography variant="caption" component="div">
+              <Typography variant="caption" component="div" sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
                 • Build a verified reputation
               </Typography>
-              <Typography variant="caption" component="div">
+              <Typography variant="caption" component="div" sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
                 • Get matched with relevant trips
               </Typography>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="caption" component="div">
+            <Grid item xs={12} sm={6}>
+              <Typography variant="caption" component="div" sx={{ fontWeight: 600, fontSize: { xs: '0.72rem', md: '0.75rem' } }}>
                 ✅ For Travelers:
               </Typography>
-              <Typography variant="caption" component="div">
+              <Typography variant="caption" component="div" sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
                 • Find trusted local guides
               </Typography>
-              <Typography variant="caption" component="div">
+              <Typography variant="caption" component="div" sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
                 • Travel safely with support
               </Typography>
-              <Typography variant="caption" component="div">
+              <Typography variant="caption" component="div" sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
                 • Get on-demand assistance
               </Typography>
             </Grid>

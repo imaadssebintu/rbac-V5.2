@@ -1400,26 +1400,26 @@ const Landing = ({ initialAuthMode }) => {
         </List>
       </Drawer>
 
-      <Dialog open={authMode === 'login'} onClose={handleCloseAuth} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {t.loginTitle}
-          <IconButton onClick={handleCloseAuth}>
+      <Dialog open={authMode === 'login'} onClose={handleCloseAuth} fullWidth maxWidth="sm" PaperProps={{ sx: { m: { xs: 1, sm: 2 } } }}>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: { xs: 1.5, md: 2 }, px: { xs: 2, md: 3 } }}>
+          <Typography variant="h6" sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }}>{t.loginTitle}</Typography>
+          <IconButton onClick={handleCloseAuth} size="small">
             <Close />
           </IconButton>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ p: { xs: 0, md: 0 } }}>
           <Login initialRole={authRole} />
         </DialogContent>
       </Dialog>
 
-      <Dialog open={authMode === 'register'} onClose={handleCloseAuth} fullWidth maxWidth="md">
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {t.registerTitle}
-          <IconButton onClick={handleCloseAuth}>
+      <Dialog open={authMode === 'register'} onClose={handleCloseAuth} fullWidth maxWidth="md" PaperProps={{ sx: { m: { xs: 0.5, sm: 2 } } }}>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: { xs: 1.5, md: 2 }, px: { xs: 2, md: 3 } }}>
+          <Typography variant="h6" sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }}>{t.registerTitle}</Typography>
+          <IconButton onClick={handleCloseAuth} size="small">
             <Close />
           </IconButton>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ p: { xs: 0, md: 0 } }}>
           <Register onClose={handleCloseAuth} />
         </DialogContent>
       </Dialog>

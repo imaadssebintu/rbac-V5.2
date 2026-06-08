@@ -137,7 +137,18 @@ const Login = ({ initialRole = null }) => {
       });
 
       if (user) {
-        const normalizedRole = (user.Role?.name || user.role || '').toLowerCase();
+        // Normalize role name to handle legacy DB names (Walkee/Walker/traveller → traveler/guide)
+        const normalizeRole = (r) => {
+          const raw = (r || '').toLowerCase().trim();
+          if (['admin', 'administrator', 'superadmin'].includes(raw)) return 'admin';
+          if (['walker', 'guide', 'escort'].includes(raw)) return 'guide';
+          if (['walkee', 'traveler', 'traveller', 'customer', 'client'].includes(raw)) return 'traveler';
+          return raw;
+        };
+
+        const rawRole = (user.Role?.name || user.role || '').toLowerCase();
+        const normalizedRole = normalizeRole(rawRole);
+
         if (role && normalizedRole && normalizedRole !== role) {
           logout();
           setLoginError('Selected role does not match your account. Please choose the correct role.');
@@ -180,21 +191,21 @@ const Login = ({ initialRole = null }) => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ py: 8 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+    <Container maxWidth="sm" sx={{ py: { xs: 3, md: 8 } }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: { xs: 2, md: 4 } }}>
         <Box sx={{ textAlign: 'center' }}>
-          <Groups sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
+          <Groups sx={{ fontSize: { xs: 40, md: 60 }, color: 'primary.main', mb: 1.5 }} />
+          <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.5rem', md: '2.125rem' } }}>
             Welcome  to <Box component="span" sx={{ fontWeight: 800 }}>Voya</Box>
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
             Sign in to your <Box component="span" sx={{ fontWeight: 700, color: 'text.primary' }}>Voya</Box> account
           </Typography>
         </Box>
       </Box>
 
       <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-        <CardContent sx={{ p: 4 }}>
+        <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
           {loginError && (
             <Alert severity="error" sx={{ mb: 3 }}>{loginError}</Alert>
           )}
@@ -250,7 +261,7 @@ const Login = ({ initialRole = null }) => {
                 }}
                 disabled={loading}
               />
-              <Button type="submit" variant="contained" size="large" fullWidth disabled={loading} sx={{ py: 1.5, borderRadius: 2 }}>
+              <Button type="submit" variant="contained" size="large" fullWidth disabled={loading} sx={{ py: { xs: 1.2, md: 1.5 }, borderRadius: 2 }}>
                 {loading ? 'Signing in...' : 'Sign In'}
               </Button>
             </Box>
@@ -271,7 +282,7 @@ const Login = ({ initialRole = null }) => {
             )}
           </Stack>
 
-          <Stack direction="row" spacing={1.5} justifyContent="center" flexWrap="wrap" sx={{ mb: 2 }}>
+          <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap" sx={{ mb: 2 }}>
             {oauthProviders.map((provider) => {
               const meta = providerMeta[provider] || { icon: <Public />, label: provider };
               return (
@@ -311,7 +322,7 @@ const Login = ({ initialRole = null }) => {
             </DialogContent>
           </Dialog>
 
-          <Box sx={{ mt: 3, textAlign: 'center' }}>
+          <Box sx={{ mt: { xs: 2, md: 3 }, textAlign: 'center' }}>
              <Link component={RouterLink} to="/register" color="primary" underline="hover">
                Don't have an account? Sign up
              </Link>
