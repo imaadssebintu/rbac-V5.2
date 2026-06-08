@@ -11,8 +11,13 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  Drawer,
   Grid,
   IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
   Menu,
   MenuItem,
   Stack,
@@ -24,6 +29,7 @@ import {
   Close,
   ExpandMore,
   Groups,
+  Menu as MenuIcon,
   PlayCircleFilled,
   Public,
   Shield,
@@ -56,6 +62,7 @@ const Landing = ({ initialAuthMode }) => {
   const [settingsPromptOpen, setSettingsPromptOpen] = useState(false);
   const [storyDialogOpen, setStoryDialogOpen] = useState(false);
   const [activeStory, setActiveStory] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const openMenu = Boolean(anchorEl);
 
@@ -887,11 +894,28 @@ const Landing = ({ initialAuthMode }) => {
           borderColor: 'divider'
         })}
       >
-        <Container maxWidth="lg" sx={{ py: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography variant="h5" sx={{ fontWeight: 700, fontFamily: '"Fraunces", serif' }}>
+        <Container maxWidth="lg" sx={{ py: { xs: 1.5, md: 2 }, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, fontFamily: '"Fraunces", serif', fontSize: { xs: '1.2rem', md: '1.5rem' } }}>
             {t.brand}
           </Typography>
-          <Stack direction="row" spacing={2} alignItems="center">
+
+          {/* Mobile hamburger menu */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 0.5 }}>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => handleOpenAuth('register')}
+              sx={{ fontSize: '0.75rem', py: 0.4, px: 1.2, whiteSpace: 'nowrap' }}
+            >
+              {t.getStarted}
+            </Button>
+            <IconButton onClick={() => setMobileMenuOpen(true)} aria-label="Open menu" size="small">
+              <MenuIcon />
+            </IconButton>
+          </Box>
+
+          {/* Desktop navigation */}
+          <Stack direction="row" spacing={2} alignItems="center" sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button endIcon={<ExpandMore />} onClick={(e) => setAnchorEl(e.currentTarget)}>
               {t.services}
             </Button>
@@ -1019,10 +1043,10 @@ const Landing = ({ initialAuthMode }) => {
       <Container maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
         <Grid container spacing={4} alignItems="center">
           <Grid item xs={12} md={6}>
-            <Typography variant="h2" sx={{ mb: 2 }}>
+            <Typography variant="h2" sx={{ mb: 2, fontSize: { xs: '1.6rem', sm: '1.8rem', md: '2.25rem' }, lineHeight: { xs: 1.3, md: 1.2 } }}>
               {t.heroTitle}
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 3, fontSize: { xs: '0.95rem', md: '1rem' } }}>
               {t.heroBody}
             </Typography>
             {userLocation && (
@@ -1036,6 +1060,7 @@ const Landing = ({ initialAuthMode }) => {
                 size="large"
                 endIcon={<ArrowForward />}
                 onClick={() => handleOpenAuth('register')}
+                sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, py: { xs: 1.2, md: 1.5 } }}
               >
                 {t.startJourney}
               </Button>
@@ -1044,6 +1069,7 @@ const Landing = ({ initialAuthMode }) => {
                 size="large"
                 startIcon={<PlayCircleFilled />}
                 onClick={() => window.open('https://www.youtube.com/watch?v=-8HDE-n8rMs', '_blank', 'noreferrer')}
+                sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, py: { xs: 1.2, md: 1.5 } }}
               >
                 {t.watchIntro}
               </Button>
@@ -1065,7 +1091,7 @@ const Landing = ({ initialAuthMode }) => {
           </Grid>
         </Grid>
 
-        <Divider sx={{ my: 6 }} />
+        <Divider sx={{ my: { xs: 4, md: 6 } }} />
 
         <Box id="safety" />
         <Grid container spacing={3}>
@@ -1126,8 +1152,8 @@ const Landing = ({ initialAuthMode }) => {
 
         <Box
           sx={(theme) => ({
-            mt: 6,
-            p: 4,
+            mt: { xs: 4, md: 6 },
+            p: { xs: 3, md: 4 },
             borderRadius: 4,
             bgcolor: theme.palette.mode === 'dark' ? 'rgba(21,28,38,0.9)' : 'background.paper',
             boxShadow: 'var(--shadow-soft)'
@@ -1162,7 +1188,7 @@ const Landing = ({ initialAuthMode }) => {
           </Grid>
         </Box>
 
-        <Box id="stories" sx={{ mt: 5 }}>
+        <Box id="stories" sx={{ mt: { xs: 3, md: 5 } }}>
           <Grid container spacing={3}>
             {storyCards.map((card) => (
               <Grid item xs={12} md={4} key={card.name}>
@@ -1206,6 +1232,173 @@ const Landing = ({ initialAuthMode }) => {
           </Grid>
         </Box>
       </Container>
+
+
+      {/* Mobile Drawer */}
+      <Drawer
+        anchor="right"
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        PaperProps={{
+          sx: {
+            width: 300,
+            bgcolor: 'background.paper',
+            p: 2
+          }
+        }}
+      >
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, fontFamily: '"Fraunces", serif' }}>
+            {t.brand}
+          </Typography>
+          <IconButton onClick={() => setMobileMenuOpen(false)} size="small">
+            <Close />
+          </IconButton>
+        </Box>
+        <Divider sx={{ mb: 2 }} />
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                setMobileMenuOpen(false);
+                handleOpenAuth('register');
+              }}
+            >
+              <ListItemText primary={t.getStarted} primaryTypographyProps={{ fontWeight: 600, color: 'primary' }} />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/guides?service=guides');
+              }}
+            >
+              <ListItemText primary={t.servicesMenu.guides} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/guides?service=security');
+              }}
+            >
+              <ListItemText primary={t.servicesMenu.security} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/guides?service=agency');
+              }}
+            >
+              <ListItemText primary={t.servicesMenu.agency} />
+            </ListItemButton>
+          </ListItem>
+
+          <Divider sx={{ my: 1 }} />
+
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => { setMobileMenuOpen(false); }} href="#safety">
+              <ListItemText primary={t.safety} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => { setMobileMenuOpen(false); }} href="#stories">
+              <ListItemText primary={t.stories} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => { setMobileMenuOpen(false); setSettingsPromptOpen(true); }}>
+              <ListItemText primary={t.settings} />
+            </ListItemButton>
+          </ListItem>
+
+          <Divider sx={{ my: 1 }} />
+
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setAuthRole('traveler');
+                handleOpenAuth('login');
+              }}
+            >
+              <ListItemText primary={t.loginTraveler} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setAuthRole('guide');
+                handleOpenAuth('login');
+              }}
+            >
+              <ListItemText primary={t.loginGuide} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setAuthRole('admin');
+                handleOpenAuth('login');
+              }}
+            >
+              <ListItemText primary={t.loginAdmin} />
+            </ListItemButton>
+          </ListItem>
+
+          <Divider sx={{ my: 1 }} />
+
+          <ListItem disablePadding>
+            <ListItemText
+              primary={t.theme}
+              sx={{ px: 2, py: 1 }}
+              primaryTypographyProps={{ variant: 'overline', color: 'text.secondary' }}
+            />
+          </ListItem>
+          {['light', 'dark', 'system'].map((mode) => (
+            <ListItem key={mode} disablePadding>
+              <ListItemButton
+                selected={themeMode === mode}
+                onClick={() => {
+                  setThemeMode(mode);
+                }}
+              >
+                <ListItemText primary={t[mode]} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+
+          <Divider sx={{ my: 1 }} />
+
+          <ListItem disablePadding>
+            <ListItemText
+              primary={t.language}
+              sx={{ px: 2, py: 1 }}
+              primaryTypographyProps={{ variant: 'overline', color: 'text.secondary' }}
+            />
+          </ListItem>
+          {['EN', 'FR', 'DE', 'ES', 'RU', 'ZH', 'KO', 'SW', 'LG'].map((lang) => (
+            <ListItem key={lang} disablePadding>
+              <ListItemButton
+                selected={language === lang}
+                onClick={() => {
+                  setLanguage(lang);
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <ListItemText primary={lang} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
 
       <Dialog open={authMode === 'login'} onClose={handleCloseAuth} fullWidth maxWidth="sm">
         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
