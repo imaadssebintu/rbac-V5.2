@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation, Pagination, EffectCoverflow } from 'swiper/modules';
+import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import 'swiper/css/effect-coverflow';
 
 const HeroCarousel = ({ images, autoPlay = true, interval = 5000 }) => {
-  const theme = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   if (!images || images.length === 0) {
@@ -20,13 +18,12 @@ const HeroCarousel = ({ images, autoPlay = true, interval = 5000 }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          bgcolor: theme.palette.mode === 'dark' ? 'rgba(21,28,38,0.8)' : 'rgba(245,247,250,0.8)',
-          borderRadius: 4,
-          border: 1,
-          borderColor: 'divider'
+          bgcolor: 'rgba(255,255,255,0.03)',
+          borderRadius: 3,
+          border: '1px solid rgba(255,255,255,0.06)',
         }}
       >
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="body1" sx={{ color: '#64748b' }}>
           Loading images...
         </Typography>
       </Box>
@@ -42,17 +39,18 @@ const HeroCarousel = ({ images, autoPlay = true, interval = 5000 }) => {
         autoplay={autoPlay ? { delay: interval, disableOnInteraction: false } : false}
         navigation={images.length > 1}
         pagination={{ clickable: true, dynamicBullets: true }}
-        modules={[Autoplay, Navigation, Pagination, EffectCoverflow]}
+        modules={[Autoplay, Navigation, Pagination]}
         onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
         style={{
-          '--swiper-navigation-color': '#fff',
-          '--swiper-pagination-color': '#fff',
-          '--swiper-pagination-bullet-inactive-color': 'rgba(255,255,255,0.5)',
+          '--swiper-navigation-color': '#00d4ff',
+          '--swiper-pagination-color': '#00d4ff',
+          '--swiper-pagination-bullet-inactive-color': 'rgba(255,255,255,0.3)',
           '--swiper-pagination-bullet-inactive-opacity': '1',
-          '--swiper-pagination-bullet-size': '10px',
+          '--swiper-pagination-bullet-size': '8px',
           '--swiper-pagination-bullet-horizontal-gap': '6px',
-          borderRadius: '20px',
-          overflow: 'hidden'
+          borderRadius: '16px',
+          overflow: 'hidden',
+          border: '1px solid rgba(255,255,255,0.06)',
         }}
       >
         {images.map((image, index) => (
@@ -63,7 +61,7 @@ const HeroCarousel = ({ images, autoPlay = true, interval = 5000 }) => {
                 width: '100%',
                 position: 'relative',
                 overflow: 'hidden',
-                borderRadius: 4
+                borderRadius: '16px',
               }}
             >
               <Box
@@ -76,43 +74,55 @@ const HeroCarousel = ({ images, autoPlay = true, interval = 5000 }) => {
                   objectFit: 'cover',
                   objectPosition: 'center',
                   transition: 'transform 0.6s ease',
-                  '&:hover': { transform: 'scale(1.05)' }
+                  filter: 'brightness(0.85) contrast(1.1)',
+                  '&:hover': { transform: 'scale(1.05)' },
                 }}
                 onError={(e) => {
                   e.target.src = 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80';
                 }}
               />
-              {/* Gradient overlay */}
+              {/* Neon gradient overlay */}
               <Box
                 sx={{
                   position: 'absolute',
                   inset: 0,
-                  background: 'linear-gradient(135deg, rgba(11,110,153,0.15) 0%, rgba(242,140,40,0.15) 100%)',
-                  borderRadius: 4
+                  background: 'linear-gradient(135deg, rgba(0,212,255,0.08) 0%, rgba(139,92,246,0.08) 100%)',
+                }}
+              />
+              {/* Bottom gradient fade */}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: '40%',
+                  background: 'linear-gradient(to top, rgba(5,5,16,0.6), transparent)',
                 }}
               />
             </Box>
           </SwiperSlide>
         ))}
       </Swiper>
-      
-      {/* Slide indicator badge */}
+
+      {/* Neon indicator badge */}
       {images.length > 1 && (
         <Box
           sx={{
             position: 'absolute',
             bottom: 16,
             right: 16,
-            bgcolor: 'rgba(0,0,0,0.5)',
-            backdropFilter: 'blur(8px)',
-            color: 'white',
+            bgcolor: 'rgba(5,5,16,0.7)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(0,212,255,0.2)',
+            color: '#00d4ff',
             px: 1.5,
             py: 0.5,
             borderRadius: 6,
-            fontSize: '0.75rem',
+            fontSize: '0.7rem',
             fontWeight: 600,
             zIndex: 10,
-            letterSpacing: 0.5
+            letterSpacing: 0.5,
           }}
         >
           {currentIndex + 1} / {images.length}
