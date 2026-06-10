@@ -50,6 +50,7 @@ import { useAuth } from '../context/AuthContext';
 import Login from '../components/auth/Login';
 import Register from '../components/auth/Register';
 import HeroCarousel from '../components/common/HeroCarousel';
+import SEO from '../components/common/SEO';
 
 // ─── Animated counter ─────────────────────────────────────────────────────
 const AnimatedCounter = ({ value, suffix = '', duration = 2000 }) => {
@@ -257,6 +258,52 @@ const Landing = ({ initialAuthMode }) => {
 
   return (
     <Box sx={{ bgcolor: '#050510', minHeight: '100vh', color: '#f1f5f9', overflow: 'hidden' }}>
+      {/* SEO meta tags */}
+      <SEO
+        title="Safe Travel with Verified Companions"
+        description="Voya connects travelers with verified local guides, security escorts, and destination experts. Plan your route, book a companion, and move with confidence anywhere in the world."
+        url="/"
+        jsonLd={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: 'How does Voya work?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Voya connects travelers with verified local guides, security escorts, and destination experts. Browse profiles, book a companion, agree on a route, and travel with confidence.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'Are the guides on Voya verified?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Yes. Every guide on Voya completes ID checks, local references, and route training before being listed. Travelers can review profiles, credentials, and verified badges.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'What safety features does Voya offer?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Guided routes use live check-ins, emergency contacts, and escalation support. You can share your walk details with trusted contacts at any time.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'How do I get started with Voya?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Simply create an account, browse verified guides in your destination city, book your preferred companion, and connect through our secure platform.'
+                }
+              }
+            ]
+          }
+        ]}
+      />
       {/* ═══════════════════════════════════════════════════════════════
           BACKGROUND AMBIENT ORBS
          ═══════════════════════════════════════════════════════════════ */}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider as MUIThemeProvider, createTheme } from '@mui/material';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
@@ -173,13 +174,15 @@ const DashboardSwitch = () => {
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <SocketProvider>
-          <ThemeWrapper />
-        </SocketProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <HelmetProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <SocketProvider>
+            <ThemeWrapper />
+          </SocketProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </HelmetProvider>
   );
 }
 

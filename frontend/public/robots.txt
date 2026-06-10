@@ -1,0 +1,22 @@
+# Robots.txt for Voya
+# Allow all crawlers to index public pages
+
+User-agent: *
+Allow: /
+Disallow: /flutterwave/
+Disallow: /paypal/
+Disallow: /payment-callback
+Disallow: /dev/
+Disallow: /admin/
+Disallow: /call/
+Disallow: /profile
+Disallow: /tasks
+Disallow: /messages
+Disallow: /notifications
+Disallow: /settings
+Disallow: /social
+Disallow: /analytics
+Disallow: /schedule
+
+# Sitemap
+Sitemap: https://voya.app/sitemap.xml

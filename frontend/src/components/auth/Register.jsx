@@ -3,75 +3,71 @@ import { useNavigate } from 'react-router-dom';
 import { useClerk } from '@clerk/clerk-react';
 import { authAPI } from '../../services/api';
 import {
-  Box,
-  Container,
-  Card,
-  CardContent,
-  Typography,
-  TextField,
-  Button,
-  Link,
-  Alert,
-  IconButton,
-  InputAdornment,
-  FormControl,
-  MenuItem,
-  Stepper,
-  Step,
-  StepLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Checkbox,
-  FormHelperText,
+  Box, Card, CardContent, Typography, TextField,
+  Button, Link, Alert, IconButton, InputAdornment,
+  FormControl, MenuItem, Stepper, Step, StepLabel,
+  RadioGroup, FormControlLabel, Radio, Checkbox, FormHelperText,
   Divider
 } from '@mui/material';
 import {
-  Visibility,
-  VisibilityOff,
-  Person,
-  Email,
-  Lock,
-  Phone,
-  LocationOn,
-  Groups,
-  ArrowBack,
-  ArrowForward,
-  Public,
-  VerifiedUser,
-  Security
+  Visibility, VisibilityOff, Person, Email, Lock, Phone, LocationOn,
+  Groups, ArrowBack, ArrowForward, Public, VerifiedUser, Security
 } from '@mui/icons-material';
 import { validateEmail, validatePassword } from '../../utils/helpers';
 import { Grid } from '@mui/material';
+
+// ─── Dark futuristic glass card ─────────────────────────────────────────
+const GlassCard = ({ children, sx }) => (
+  <Card
+    sx={{
+      borderRadius: 3,
+      background: 'rgba(255,255,255,0.03)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255,255,255,0.06)',
+      boxShadow: '0 0 40px rgba(0,0,0,0.3)',
+      ...sx,
+    }}
+  >
+    {children}
+  </Card>
+);
+
+const neonBtn = {
+  background: 'linear-gradient(135deg, #00d4ff, #8b5cf6)',
+  boxShadow: '0 0 24px rgba(0,212,255,0.3), 0 0 60px rgba(139,92,246,0.15)',
+  '&:hover': {
+    background: 'linear-gradient(135deg, #00c4ef, #7c4ae8)',
+    boxShadow: '0 0 32px rgba(0,212,255,0.5), 0 0 80px rgba(139,92,246,0.25)',
+    transform: 'translateY(-2px)',
+  },
+  transition: 'all 0.3s ease',
+};
+
+const darkInput = {
+  '& .MuiOutlinedInput-root': {
+    bgcolor: 'rgba(255,255,255,0.03)',
+    '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+    '&:hover fieldset': { borderColor: 'rgba(0,212,255,0.3)' },
+    '&.Mui-focused fieldset': { borderColor: '#00d4ff', borderWidth: '1px' },
+    '& input': { color: '#f1f5f9' },
+    '& textarea': { color: '#f1f5f9' },
+    '& .MuiInputAdornment-root': { color: '#64748b' },
+  },
+  '& .MuiInputLabel-root': { color: '#64748b', '&.Mui-focused': { color: '#00d4ff' } },
+  '& .MuiFormHelperText-root': { color: '#f472b6' },
+};
 
 const Register = ({ onClose }) => {
   const navigate = useNavigate();
 
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
-    // Step 1: Basic Info
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
-
-    // Step 2: Role & Location
-    role: 'traveler',
-    location: '',
-
-    // Step 3: Additional Info
-    bio: '',
-    experience: '',
-    supportNeeds: [],
-    guideSkills: [],
-    languages: [],
-    organization: '',
-    adminRole: '',
-    tripPurpose: '',
-
-    // Terms
-    acceptTerms: false
+    name: '', email: '', password: '', confirmPassword: '', phone: '',
+    role: 'traveler', location: '',
+    bio: '', experience: '', supportNeeds: [], guideSkills: [], languages: [],
+    organization: '', adminRole: '', tripPurpose: '',
+    acceptTerms: false,
   });
 
   const [errors, setErrors] = useState({});
@@ -79,755 +75,370 @@ const Register = ({ onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [registerError, setRegisterError] = useState('');
-
   const clerkEnabled = !!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
-
-  // Form radio values already use the canonical backend role names.
-  // No mapping needed — pass formData.role directly as role_name.
 
   const steps = ['Basic Information', 'Role & Location', 'Additional Details'];
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-    if (registerError) {
-      setRegisterError('');
-    }
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
+    if (registerError) setRegisterError('');
   };
 
   const validateStep = (step) => {
     const newErrors = {};
-
     switch (step) {
-      case 0: // Basic Info
-        if (!formData.name.trim()) {
-          newErrors.name = 'Name is required';
-        }
-
-        if (!formData.email.trim()) {
-          newErrors.email = 'Email is required';
-        } else if (!validateEmail(formData.email)) {
-          newErrors.email = 'Please enter a valid email';
-        }
-
-        if (!formData.password) {
-          newErrors.password = 'Password is required';
-        } else {
-          const passwordValidation = validatePassword(formData.password);
-          if (!passwordValidation.isValid) {
-            newErrors.password = 'Password must be at least 8 characters with uppercase, lowercase, and numbers';
-          }
-        }
-
-        if (!formData.confirmPassword) {
-          newErrors.confirmPassword = 'Please confirm your password';
-        } else if (formData.password !== formData.confirmPassword) {
-          newErrors.confirmPassword = 'Passwords do not match';
-        }
-
-        if (!formData.phone.trim()) {
-          newErrors.phone = 'Phone number is required';
-        }
+      case 0:
+        if (!formData.name.trim()) newErrors.name = 'Name is required';
+        if (!formData.email.trim()) newErrors.email = 'Email is required';
+        else if (!validateEmail(formData.email)) newErrors.email = 'Please enter a valid email';
+        if (!formData.password) newErrors.password = 'Password is required';
+        else { const pw = validatePassword(formData.password); if (!pw.isValid) newErrors.password = 'Password must be at least 8 characters with uppercase, lowercase, and numbers'; }
+        if (!formData.confirmPassword) newErrors.confirmPassword = 'Please confirm your password';
+        else if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
+        if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
         break;
-
-      case 1: // Role & Location
-        if (!formData.role) {
-          newErrors.role = 'Please select a role';
-        }
-
-        if (!formData.location.trim()) {
-          newErrors.location = 'Location is required';
-        }
+      case 1:
+        if (!formData.role) newErrors.role = 'Please select a role';
+        if (!formData.location.trim()) newErrors.location = 'Location is required';
         break;
-
-      case 2: // Additional Info
-        if (formData.role === 'guide' && !formData.experience) {
-          newErrors.experience = 'Please specify your experience';
-        }
-
+      case 2:
+        if (formData.role === 'guide' && !formData.experience) newErrors.experience = 'Please specify your experience';
         if (formData.role === 'admin') {
-          if (!formData.organization.trim()) {
-            newErrors.organization = 'Organization is required for admins';
-          }
-          if (!formData.adminRole.trim()) {
-            newErrors.adminRole = 'Admin role is required';
-          }
+          if (!formData.organization.trim()) newErrors.organization = 'Organization is required for admins';
+          if (!formData.adminRole.trim()) newErrors.adminRole = 'Admin role is required';
         }
-
-        if (!formData.acceptTerms) {
-          newErrors.acceptTerms = 'You must accept the terms and conditions';
-        }
+        if (!formData.acceptTerms) newErrors.acceptTerms = 'You must accept the terms and conditions';
         break;
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
-    if (validateStep(activeStep)) {
-      setActiveStep((prevStep) => prevStep + 1);
-    }
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevStep) => prevStep - 1);
-  };
+  const handleNext = () => { if (validateStep(activeStep)) setActiveStep(p => p + 1); };
+  const handleBack = () => setActiveStep(p => p - 1);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateStep(activeStep)) {
-      return;
-    }
-
-    if (activeStep < steps.length - 1) {
-      handleNext();
-      return;
-    }
+    if (!validateStep(activeStep)) return;
+    if (activeStep < steps.length - 1) { handleNext(); return; }
 
     try {
       setLoading(true);
       setRegisterError('');
-
-      // Prepare registration data - map role from 'walker'/'walkee' to role_name for backend
       const registrationData = {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        phone: formData.phone,
-        role_name: formData.role || 'traveler',
-        location: formData.location
+        name: formData.name, email: formData.email, password: formData.password,
+        phone: formData.phone, role_name: formData.role || 'traveler', location: formData.location,
       };
-
-      console.log('Registering user:', registrationData);
-
-      // ✅ Call the backend API to register
       const response = await authAPI.register(registrationData);
-      
       if (response.data.token && response.data.user) {
-        // Save token to localStorage
         localStorage.setItem('token', response.data.token);
-        // Close modal if present and navigate via router so SPA state updates
         if (onClose) onClose();
-        alert('Registration successful! Redirecting to dashboard...');
         navigate('/');
       } else {
-        alert('Registration successful! Please login with your credentials.');
         navigate('/login');
       }
-
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
-      setRegisterError(errorMessage);
-      console.error('Registration error:', error);
+      setRegisterError(error.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const supportNeedsOptions = [
-    'City orientation',
-    'Airport pickup',
-    'Local guide',
-    'Security escort',
-    'Translation help',
-    'Custom itinerary'
-  ];
-  const guideSkillsOptions = [
-    'Licensed guide',
-    'Security trained',
-    'First-aid certified',
-    'Multilingual',
-    'Driver license',
-    'Cultural historian'
-  ];
+  const supportNeedsOptions = ['City orientation', 'Airport pickup', 'Local guide', 'Security escort', 'Translation help', 'Custom itinerary'];
+  const guideSkillsOptions = ['Licensed guide', 'Security trained', 'First-aid certified', 'Multilingual', 'Driver license', 'Cultural historian'];
   const languageOptions = ['English', 'French', 'Swahili', 'Arabic', 'Spanish', 'Portuguese'];
 
   const renderStepContent = (step) => {
     switch (step) {
       case 0:
         return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {/* Name */}
-            <TextField
-              fullWidth
-              label="Full Name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              error={!!errors.name}
-              helperText={errors.name}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Person />
-                  </InputAdornment>
-                )
-              }}
-              placeholder="Enter your full name"
-            />
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+            {[
+              { name: 'name', label: 'Full Name', icon: <Person sx={{ fontSize: 18 }} />, placeholder: 'Enter your full name' },
+              { name: 'email', label: 'Email Address', icon: <Email sx={{ fontSize: 18 }} />, placeholder: 'Enter your email', type: 'email' },
+              { name: 'phone', label: 'Phone Number', icon: <Phone sx={{ fontSize: 18 }} />, placeholder: 'Enter your phone number' },
+            ].map((field) => (
+              <TextField key={field.name} fullWidth label={field.label} name={field.name} size="small"
+                type={field.type || 'text'} value={formData[field.name]} onChange={handleChange}
+                error={!!errors[field.name]} helperText={errors[field.name]}
+                InputProps={{ startAdornment: (<InputAdornment position="start">{field.icon}</InputAdornment>) }}
+                placeholder={field.placeholder} sx={darkInput} />
+            ))}
 
-            {/* Email */}
-            <TextField
-              fullWidth
-              label="Email Address"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              error={!!errors.email}
-              helperText={errors.email}
+            <TextField fullWidth label="Password" name="password" size="small"
+              type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange}
+              error={!!errors.password} helperText={errors.password}
               InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Email />
-                  </InputAdornment>
-                )
-              }}
-              placeholder="Enter your email"
-            />
+                startAdornment: (<InputAdornment position="start"><Lock sx={{ fontSize: 18 }} /></InputAdornment>),
+                endAdornment: (<InputAdornment position="end"><IconButton onClick={() => setShowPassword(!showPassword)} edge="end" size="small" sx={{ color: '#64748b' }}>{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment>),
+              }} placeholder="Create a strong password" sx={darkInput} />
 
-            {/* Password */}
-            <TextField
-              fullWidth
-              label="Password"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              value={formData.password}
-              onChange={handleChange}
-              error={!!errors.password}
-              helperText={errors.password}
+            <TextField fullWidth label="Confirm Password" name="confirmPassword" size="small"
+              type={showConfirmPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange}
+              error={!!errors.confirmPassword} helperText={errors.confirmPassword}
               InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
-              placeholder="Create a strong password"
-            />
-
-            {/* Confirm Password */}
-            <TextField
-              fullWidth
-              label="Confirm Password"
-              name="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              error={!!errors.confirmPassword}
-              helperText={errors.confirmPassword}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      edge="end"
-                    >
-                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
-              placeholder="Confirm your password"
-            />
-
-            {/* Phone */}
-            <TextField
-              fullWidth
-              label="Phone Number"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              error={!!errors.phone}
-              helperText={errors.phone}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Phone />
-                  </InputAdornment>
-                )
-              }}
-              placeholder="Enter your phone number"
-            />
+                startAdornment: (<InputAdornment position="start"><Lock sx={{ fontSize: 18 }} /></InputAdornment>),
+                endAdornment: (<InputAdornment position="end"><IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end" size="small" sx={{ color: '#64748b' }}>{showConfirmPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment>),
+              }} placeholder="Confirm your password" sx={darkInput} />
           </Box>
         );
 
       case 1:
         return (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {/* Role Selection */}
             <FormControl error={!!errors.role}>
-              <Typography variant="subtitle2" gutterBottom>
+              <Typography variant="subtitle2" sx={{ color: '#94a3b8', mb: 1, fontWeight: 600 }}>
                 I want to join as:
               </Typography>
-              <RadioGroup
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                sx={{ flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-around' }}
-              >
-                <FormControlLabel
-                  value="traveler"
-                  control={<Radio />}
-                  label={
-                    <Box sx={{ textAlign: 'center' }}>
-                      <Public sx={{ fontSize: { xs: 28, md: 40 }, mb: 0.5 }} />
-                      <Typography sx={{ fontSize: { xs: '0.85rem', md: '1rem' } }}>Traveler</Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
-                        Find trusted local guidance
-                      </Typography>
-                    </Box>
-                  }
-                  sx={{ flexDirection: 'column', alignItems: 'center', mx: { xs: 0, sm: 1 } }}
-                />
-                <FormControlLabel
-                  value="guide"
-                  control={<Radio />}
-                  label={
-                    <Box sx={{ textAlign: 'center' }}>
-                      <VerifiedUser sx={{ fontSize: { xs: 28, md: 40 }, mb: 0.5 }} />
-                      <Typography sx={{ fontSize: { xs: '0.85rem', md: '1rem' } }}>Guide</Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
-                        Support visitors with local expertise
-                      </Typography>
-                    </Box>
-                  }
-                  sx={{ flexDirection: 'column', alignItems: 'center', mx: { xs: 0, sm: 1 } }}
-                />
-                <FormControlLabel
-                  value="admin"
-                  control={<Radio />}
-                  label={
-                    <Box sx={{ textAlign: 'center' }}>
-                      <Security sx={{ fontSize: { xs: 28, md: 40 }, mb: 0.5 }} />
-                      <Typography sx={{ fontSize: { xs: '0.85rem', md: '1rem' } }}>Admin</Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
-                        Manage teams and compliance
-                      </Typography>
-                    </Box>
-                  }
-                  sx={{ flexDirection: 'column', alignItems: 'center', mx: { xs: 0, sm: 1 } }}
-                />
+              <RadioGroup name="role" value={formData.role} onChange={handleChange}
+                sx={{ flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-around', gap: { xs: 1, sm: 0 } }}>
+                {[
+                  { value: 'traveler', icon: <Public />, title: 'Traveler', desc: 'Find trusted local guidance' },
+                  { value: 'guide', icon: <VerifiedUser />, title: 'Guide', desc: 'Support visitors with local expertise' },
+                  { value: 'admin', icon: <Security />, title: 'Admin', desc: 'Manage teams and compliance' },
+                ].map((opt) => (
+                  <FormControlLabel key={opt.value} value={opt.value} control={<Radio sx={{ color: '#64748b', '&.Mui-checked': { color: '#00d4ff' } }} />}
+                    label={
+                      <Box sx={{ textAlign: 'center', px: 1 }}>
+                        <Box sx={{ color: formData.role === opt.value ? '#00d4ff' : '#64748b', filter: formData.role === opt.value ? 'drop-shadow(0 0 12px rgba(0,212,255,0.4))' : 'none', transition: 'all 0.3s ease' }}>
+                          {React.cloneElement(opt.icon, { sx: { fontSize: { xs: 28, md: 36 } } })}
+                        </Box>
+                        <Typography sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, color: '#f1f5f9', fontWeight: 600 }}>{opt.title}</Typography>
+                        <Typography variant="caption" sx={{ color: '#64748b', display: { xs: 'none', sm: 'block' } }}>{opt.desc}</Typography>
+                      </Box>
+                    }
+                    sx={{ flexDirection: 'column', alignItems: 'center', mx: 0, p: 1.5, borderRadius: 2, border: formData.role === opt.value ? '1px solid rgba(0,212,255,0.3)' : '1px solid transparent', bgcolor: formData.role === opt.value ? 'rgba(0,212,255,0.05)' : 'transparent', transition: 'all 0.3s ease', '&:hover': { bgcolor: 'rgba(255,255,255,0.03)' } }} />
+                ))}
               </RadioGroup>
-              {errors.role && <FormHelperText>{errors.role}</FormHelperText>}
+              {errors.role && <FormHelperText sx={{ color: '#f472b6' }}>{errors.role}</FormHelperText>}
             </FormControl>
 
-            <Divider />
+            <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)' }} />
 
-            {/* Location */}
-            <TextField
-              fullWidth
-              label="Your Location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              error={!!errors.location}
-              helperText={errors.location}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LocationOn />
-                  </InputAdornment>
-                )
-              }}
-              placeholder="Enter your city or address"
-            />
+            <TextField fullWidth label="Your Location" name="location" size="small"
+              value={formData.location} onChange={handleChange} error={!!errors.location} helperText={errors.location}
+              InputProps={{ startAdornment: (<InputAdornment position="start"><LocationOn sx={{ fontSize: 18 }} /></InputAdornment>) }}
+              placeholder="Enter your city or address" sx={darkInput} />
           </Box>
         );
 
       case 2:
         return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {/* Bio */}
-            <TextField
-              fullWidth
-              label="Bio"
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
-              multiline
-              rows={3}
-              placeholder="Tell us about yourself (optional)"
-            />
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+            <TextField fullWidth label="Bio" name="bio" size="small" value={formData.bio} onChange={handleChange}
+              multiline rows={3} placeholder="Tell us about yourself (optional)" sx={darkInput} />
 
-            {/* Traveler fields */}
             {formData.role === 'traveler' && (
               <>
-                <TextField
-                  fullWidth
-                  label="Trip Purpose"
-                  name="tripPurpose"
-                  value={formData.tripPurpose}
-                  onChange={handleChange}
-                  placeholder="Business, leisure, study, relocation..."
-                />
-
+                <TextField fullWidth label="Trip Purpose" name="tripPurpose" size="small"
+                  value={formData.tripPurpose} onChange={handleChange} placeholder="Business, leisure, study, relocation..." sx={darkInput} />
                 <FormControl>
-                  <Typography variant="subtitle2" gutterBottom>
-                    Support Needed
-                  </Typography>
+                  <Typography variant="subtitle2" sx={{ color: '#94a3b8', mb: 0.5, fontWeight: 600 }}>Support Needed</Typography>
                   {supportNeedsOptions.map((need) => (
-                    <FormControlLabel
-                      key={need}
-                      control={
-                        <Checkbox
-                          checked={formData.supportNeeds.includes(need)}
-                          onChange={(e) => {
-                            const newNeeds = e.target.checked
-                              ? [...formData.supportNeeds, need]
-                              : formData.supportNeeds.filter(s => s !== need);
-                            setFormData(prev => ({ ...prev, supportNeeds: newNeeds }));
-                          }}
-                          name={`support-${need}`}
-                        />
-                      }
-                      label={need}
-                    />
+                    <FormControlLabel key={need} control={<Checkbox checked={formData.supportNeeds.includes(need)}
+                      onChange={(e) => { const n = e.target.checked ? [...formData.supportNeeds, need] : formData.supportNeeds.filter(s => s !== need); setFormData(p => ({ ...p, supportNeeds: n })); }}
+                      sx={{ color: '#64748b', '&.Mui-checked': { color: '#00d4ff' } }} />}
+                      label={<Typography variant="body2" sx={{ color: '#cbd5e1' }}>{need}</Typography>} />
                   ))}
                 </FormControl>
               </>
             )}
 
-            {/* Guide fields */}
             {formData.role === 'guide' && (
               <>
-                <TextField
-                  fullWidth
-                  select
-                  label="Experience Level"
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleChange}
-                  error={!!errors.experience}
-                  helperText={errors.experience}
-                >
-                  <MenuItem value="">Select experience</MenuItem>
-                  <MenuItem value="beginner">Beginner (0-1 years)</MenuItem>
-                  <MenuItem value="intermediate">Intermediate (1-3 years)</MenuItem>
-                  <MenuItem value="experienced">Experienced (3+ years)</MenuItem>
-                  <MenuItem value="professional">Professional (5+ years)</MenuItem>
+                <TextField fullWidth select label="Experience Level" name="experience" size="small"
+                  value={formData.experience} onChange={handleChange} error={!!errors.experience} helperText={errors.experience}
+                  sx={darkInput}
+                  SelectProps={{ MenuProps: { PaperProps: { sx: { bgcolor: 'rgba(15,15,30,0.95)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)' } } } }}>
+                  <MenuItem value=""><em>Select experience</em></MenuItem>
+                  <MenuItem value="beginner" sx={{ color: '#cbd5e1' }}>Beginner (0-1 years)</MenuItem>
+                  <MenuItem value="intermediate" sx={{ color: '#cbd5e1' }}>Intermediate (1-3 years)</MenuItem>
+                  <MenuItem value="experienced" sx={{ color: '#cbd5e1' }}>Experienced (3+ years)</MenuItem>
+                  <MenuItem value="professional" sx={{ color: '#cbd5e1' }}>Professional (5+ years)</MenuItem>
                 </TextField>
 
                 <FormControl>
-                  <Typography variant="subtitle2" gutterBottom>
-                    Guide Skills
-                  </Typography>
+                  <Typography variant="subtitle2" sx={{ color: '#94a3b8', mb: 0.5, fontWeight: 600 }}>Guide Skills</Typography>
                   {guideSkillsOptions.map((skill) => (
-                    <FormControlLabel
-                      key={skill}
-                      control={
-                        <Checkbox
-                          checked={formData.guideSkills.includes(skill)}
-                          onChange={(e) => {
-                            const newSkills = e.target.checked
-                              ? [...formData.guideSkills, skill]
-                              : formData.guideSkills.filter(s => s !== skill);
-                            setFormData(prev => ({ ...prev, guideSkills: newSkills }));
-                          }}
-                          name={`skill-${skill}`}
-                        />
-                      }
-                      label={skill}
-                    />
+                    <FormControlLabel key={skill} control={<Checkbox checked={formData.guideSkills.includes(skill)}
+                      onChange={(e) => { const s = e.target.checked ? [...formData.guideSkills, skill] : formData.guideSkills.filter(x => x !== skill); setFormData(p => ({ ...p, guideSkills: s })); }}
+                      sx={{ color: '#64748b', '&.Mui-checked': { color: '#8b5cf6' } }} />}
+                      label={<Typography variant="body2" sx={{ color: '#cbd5e1' }}>{skill}</Typography>} />
                   ))}
                 </FormControl>
 
                 <FormControl>
-                  <Typography variant="subtitle2" gutterBottom>
-                    Languages Spoken
-                  </Typography>
-                  {languageOptions.map((language) => (
-                    <FormControlLabel
-                      key={language}
-                      control={
-                        <Checkbox
-                          checked={formData.languages.includes(language)}
-                          onChange={(e) => {
-                            const newLanguages = e.target.checked
-                              ? [...formData.languages, language]
-                              : formData.languages.filter(l => l !== language);
-                            setFormData(prev => ({ ...prev, languages: newLanguages }));
-                          }}
-                          name={`language-${language}`}
-                        />
-                      }
-                      label={language}
-                    />
+                  <Typography variant="subtitle2" sx={{ color: '#94a3b8', mb: 0.5, fontWeight: 600 }}>Languages Spoken</Typography>
+                  {languageOptions.map((lang) => (
+                    <FormControlLabel key={lang} control={<Checkbox checked={formData.languages.includes(lang)}
+                      onChange={(e) => { const l = e.target.checked ? [...formData.languages, lang] : formData.languages.filter(x => x !== lang); setFormData(p => ({ ...p, languages: l })); }}
+                      sx={{ color: '#64748b', '&.Mui-checked': { color: '#f472b6' } }} />}
+                      label={<Typography variant="body2" sx={{ color: '#cbd5e1' }}>{lang}</Typography>} />
                   ))}
                 </FormControl>
               </>
             )}
 
-            {/* Admin fields */}
             {formData.role === 'admin' && (
               <>
-                <TextField
-                  fullWidth
-                  label="Organization"
-                  name="organization"
-                  value={formData.organization}
-                  onChange={handleChange}
-                  error={!!errors.organization}
-                  helperText={errors.organization}
-                  placeholder="Agency, company, or institution"
-                />
-                <TextField
-                  fullWidth
-                  label="Admin Role"
-                  name="adminRole"
-                  value={formData.adminRole}
-                  onChange={handleChange}
-                  error={!!errors.adminRole}
-                  helperText={errors.adminRole}
-                  placeholder="Operations, safety, compliance..."
-                />
+                <TextField fullWidth label="Organization" name="organization" size="small"
+                  value={formData.organization} onChange={handleChange} error={!!errors.organization} helperText={errors.organization}
+                  placeholder="Agency, company, or institution" sx={darkInput} />
+                <TextField fullWidth label="Admin Role" name="adminRole" size="small"
+                  value={formData.adminRole} onChange={handleChange} error={!!errors.adminRole} helperText={errors.adminRole}
+                  placeholder="Operations, safety, compliance..." sx={darkInput} />
               </>
             )}
 
-            <Divider />
+            <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)' }} />
 
-            {/* Terms & Conditions */}
             <FormControl error={!!errors.acceptTerms}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={formData.acceptTerms}
-                    onChange={handleChange}
-                    name="acceptTerms"
-                  />
-                }
-                label={
-                  <Typography variant="body2">
-                    I agree to the{' '}
-                    <Link href="#" color="primary">
-                      Terms of Service
-                    </Link>{' '}
-                    and{' '}
-                    <Link href="#" color="primary">
-                      Privacy Policy
-                    </Link>
-                  </Typography>
-                }
-              />
-              {errors.acceptTerms && <FormHelperText>{errors.acceptTerms}</FormHelperText>}
+              <FormControlLabel control={<Checkbox checked={formData.acceptTerms} onChange={handleChange} name="acceptTerms"
+                sx={{ color: '#64748b', '&.Mui-checked': { color: '#00d4ff' } }} />}
+                label={<Typography variant="body2" sx={{ color: '#cbd5e1' }}>I agree to the <Link href="#" sx={{ color: '#00d4ff' }}>Terms of Service</Link> and <Link href="#" sx={{ color: '#00d4ff' }}>Privacy Policy</Link></Typography>} />
+              {errors.acceptTerms && <FormHelperText sx={{ color: '#f472b6' }}>{errors.acceptTerms}</FormHelperText>}
             </FormControl>
           </Box>
         );
-
       default:
         return null;
     }
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: { xs: 3, md: 6 } }}>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: { xs: 2, md: 4 } }}>
+    <Box sx={{ bgcolor: '#050510', minHeight: '100vh', color: '#f1f5f9', py: { xs: 3, md: 6 } }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: { xs: 2, md: 4 }, px: 2 }}>
         <Box sx={{ textAlign: 'center' }}>
-          <Groups sx={{ fontSize: { xs: 40, md: 60 }, color: 'primary.main', mb: 1.5 }} />
-          <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.5rem', md: '2.125rem' } }}>
-            Join <Box component="span" sx={{ fontWeight: 800 }}>Voya</Box>
+          <Groups sx={{ fontSize: { xs: 40, md: 60 }, color: '#8b5cf6', mb: 1.5, filter: 'drop-shadow(0 0 20px rgba(139,92,246,0.4))' }} />
+          <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5, fontFamily: '"Fraunces", serif' }}>
+            Join{' '}
+            <Box component="span" sx={{
+              background: 'linear-gradient(135deg, #00d4ff, #8b5cf6)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}>
+              Voya
+            </Box>
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
+          <Typography variant="body1" sx={{ color: '#64748b', fontSize: { xs: '0.9rem', md: '1rem' } }}>
             Create your account in 3 simple steps
           </Typography>
         </Box>
       </Box>
 
-      <Card sx={{ borderRadius: 3, boxShadow: { xs: 1, md: 3 } }}>
-        <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
-          {/* Stepper */}
-          <Stepper activeStep={activeStep} sx={{ mb: { xs: 2, md: 4 }, '& .MuiStepLabel-label': { fontSize: { xs: '0.7rem', md: '0.875rem' } }, '& .MuiStepIcon-root': { fontSize: { xs: '1.2rem', md: '1.5rem' } } }}>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+      <Box sx={{ maxWidth: 560, mx: 'auto', px: 2 }}>
+        <GlassCard>
+          <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
+            {/* Stepper */}
+            <Stepper activeStep={activeStep} sx={{
+              mb: { xs: 2, md: 4 },
+              '& .MuiStepLabel-label': { fontSize: { xs: '0.7rem', md: '0.875rem' }, color: '#64748b', '&.Mui-active': { color: '#00d4ff' }, '&.Mui-completed': { color: '#8b5cf6' } },
+              '& .MuiStepIcon-root': { fontSize: { xs: '1.2rem', md: '1.5rem' }, color: 'rgba(255,255,255,0.1)', '&.Mui-active': { color: '#00d4ff' }, '&.Mui-completed': { color: '#8b5cf6' } },
+              '& .MuiStepConnector-line': { borderColor: 'rgba(255,255,255,0.06)' },
+            }}>
+              {steps.map((label) => (
+                <Step key={label}><StepLabel>{label}</StepLabel></Step>
+              ))}
+            </Stepper>
 
-          {/* Error Message */}
-          {registerError && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-              {registerError}
-            </Alert>
-          )}
+            {registerError && (
+              <Alert severity="error" sx={{ mb: 3, borderRadius: 2, bgcolor: 'rgba(244,67,54,0.1)', color: '#f472b6', '& .MuiAlert-icon': { color: '#f472b6' } }}>
+                {registerError}
+              </Alert>
+            )}
 
-          {clerkEnabled && (
-            <ClerkRegisterButton
-              role={formData.role}
-              setRegisterError={setRegisterError}
-            />
-          )}
+            {clerkEnabled && <ClerkRegisterButton role={formData.role} setRegisterError={setRegisterError} />}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit}>
-            {renderStepContent(activeStep)}
+            <form onSubmit={handleSubmit}>
+              {renderStepContent(activeStep)}
 
-            {/* Navigation Buttons */}
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', sm: 'row' }, justifyContent: 'space-between', mt: 4, gap: { xs: 1.5, sm: 0 } }}>
-              <Button
-                variant="outlined"
-                startIcon={<ArrowBack />}
-                onClick={handleBack}
-                disabled={activeStep === 0 || loading}
-                sx={{ width: { xs: '100%', sm: 'auto' } }}
-              >
-                Back
-              </Button>
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', sm: 'row' }, justifyContent: 'space-between', mt: 4, gap: { xs: 1.5, sm: 0 } }}>
+                <Button variant="outlined" startIcon={<ArrowBack />} onClick={handleBack} disabled={activeStep === 0 || loading}
+                  sx={{ width: { xs: '100%', sm: 'auto' }, borderColor: 'rgba(255,255,255,0.15)', color: '#cbd5e1', '&:hover': { borderColor: '#00d4ff', color: '#00d4ff', bgcolor: 'rgba(0,212,255,0.05)' } }}>
+                  Back
+                </Button>
+                <Button type="submit" variant="contained" endIcon={activeStep === steps.length - 1 ? null : <ArrowForward />} disabled={loading}
+                  sx={{ width: { xs: '100%', sm: 'auto' }, borderRadius: 2, ...neonBtn }}>
+                  {loading ? 'Processing...' : activeStep === steps.length - 1 ? 'Create Account' : 'Continue'}
+                </Button>
+              </Box>
+            </form>
 
-              <Button
-                type="submit"
-                variant="contained"
-                endIcon={activeStep === steps.length - 1 ? null : <ArrowForward />}
-                disabled={loading}
-                sx={{ width: { xs: '100%', sm: 'auto' } }}
-              >
-                {loading
-                  ? 'Processing...'
-                  : activeStep === steps.length - 1
-                    ? 'Create Account'
-                    : 'Continue'
-                }
-              </Button>
+            <Box sx={{ mt: { xs: 2, md: 4 }, textAlign: 'center' }}>
+              <Typography variant="body2" sx={{ color: '#64748b' }}>
+                Already have an account?{' '}
+                <Link component="button" type="button" sx={{ color: '#00d4ff', textDecoration: 'none', cursor: 'pointer', border: 'none', background: 'none', p: 0, fontWeight: 600, '&:hover': { color: '#8b5cf6' } }}
+                  onClick={(event) => { event.preventDefault(); if (onClose) onClose(); navigate('/login', { replace: true }); }}>
+                  Sign in here
+                </Link>
+              </Typography>
             </Box>
-          </form>
+          </CardContent>
+        </GlassCard>
 
-          {/* Login Link */}
-          <Box sx={{ mt: { xs: 2, md: 4 }, textAlign: 'center' }}>
-            <Typography variant="body2" color="text.secondary">
-              Already have an account?{' '}
-              <Link
-                component="button"
-                type="button"
-                color="primary"
-                sx={{
-                  textDecoration: 'none',
-                  fontWeight: 'medium',
-                  cursor: 'pointer',
-                  border: 'none',
-                  background: 'none',
-                  p: 0
-                }}
-                onClick={(event) => {
-                  event.preventDefault();
-                  if (onClose) {
-                    onClose();
-                  }
-                  navigate('/login', { replace: true });
-                }}
-              >
-                Sign in here
-              </Link>
+        {/* Benefits card */}
+        <GlassCard sx={{ mt: { xs: 2, md: 3 } }}>
+          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+            <Typography variant="subtitle2" sx={{ color: '#00d4ff', fontWeight: 700, mb: 1.5, fontSize: { xs: '0.85rem', md: '0.875rem' } }}>
+              ⚡ Why join <Box component="span" sx={{ background: 'linear-gradient(135deg, #00d4ff, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Voya</Box>?
             </Typography>
-          </Box>
-        </CardContent>
-      </Card>
-
-      {/* Role Benefits */}
-      <Card sx={{ mt: { xs: 2, md: 3 }, borderRadius: 3, bgcolor: 'info.light' }}>
-        <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-          <Typography variant="subtitle2" gutterBottom sx={{ fontSize: { xs: '0.85rem', md: '0.875rem' } }}>
-            🎯 Why join <Box component="span" sx={{ fontWeight: 700 }}>Voya</Box>?
-          </Typography>
-          <Grid container spacing={1}>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="caption" component="div" sx={{ fontWeight: 600, fontSize: { xs: '0.72rem', md: '0.75rem' } }}>
-                ✅ For Guides:
-              </Typography>
-              <Typography variant="caption" component="div" sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
-                • Earn income supporting travelers
-              </Typography>
-              <Typography variant="caption" component="div" sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
-                • Build a verified reputation
-              </Typography>
-              <Typography variant="caption" component="div" sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
-                • Get matched with relevant trips
-              </Typography>
+            <Grid container spacing={1.5}>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="caption" component="div" sx={{ fontWeight: 700, color: '#8b5cf6', mb: 0.5, fontSize: { xs: '0.72rem', md: '0.75rem' } }}>
+                  ✅ For Guides:
+                </Typography>
+                {['Earn income supporting travelers', 'Build a verified reputation', 'Get matched with relevant trips'].map((item) => (
+                  <Typography key={item} variant="caption" component="div" sx={{ color: '#64748b', fontSize: { xs: '0.7rem', md: '0.75rem' }, lineHeight: 1.8 }}>
+                    • {item}
+                  </Typography>
+                ))}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="caption" component="div" sx={{ fontWeight: 700, color: '#00d4ff', mb: 0.5, fontSize: { xs: '0.72rem', md: '0.75rem' } }}>
+                  ✅ For Travelers:
+                </Typography>
+                {['Find trusted local guides', 'Travel safely with support', 'Get on-demand assistance'].map((item) => (
+                  <Typography key={item} variant="caption" component="div" sx={{ color: '#64748b', fontSize: { xs: '0.7rem', md: '0.75rem' }, lineHeight: 1.8 }}>
+                    • {item}
+                  </Typography>
+                ))}
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="caption" component="div" sx={{ fontWeight: 600, fontSize: { xs: '0.72rem', md: '0.75rem' } }}>
-                ✅ For Travelers:
-              </Typography>
-              <Typography variant="caption" component="div" sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
-                • Find trusted local guides
-              </Typography>
-              <Typography variant="caption" component="div" sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
-                • Travel safely with support
-              </Typography>
-              <Typography variant="caption" component="div" sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
-                • Get on-demand assistance
-              </Typography>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-    </Container>
+          </CardContent>
+        </GlassCard>
+      </Box>
+    </Box>
   );
 };
 
 export default Register;
 
+// ─── Clerk Register Button ──────────────────────────────────────────────
 const ClerkRegisterButton = ({ role, setRegisterError }) => {
   const { openSignUp } = useClerk();
 
   const handleClerkSignUp = async () => {
-    if (!openSignUp) {
-      setRegisterError('Clerk sign-up is not available right now.');
-      return;
-    }
-
+    if (!openSignUp) { setRegisterError('Clerk sign-up is not available right now.'); return; }
     try {
       setRegisterError('');
       sessionStorage.setItem('voya_clerk_role', role);
       sessionStorage.setItem('voya_clerk_bridge_requested', '1');
-      await openSignUp({
-        forceRedirectUrl: '/login',
-        fallbackRedirectUrl: '/login'
-      });
+      await openSignUp({ forceRedirectUrl: '/login', fallbackRedirectUrl: '/login' });
     } catch (error) {
-      const errorMessage = error?.errors?.[0]?.message || error?.message || 'Unable to open Clerk sign-up.';
-      setRegisterError(errorMessage);
+      setRegisterError(error?.errors?.[0]?.message || error?.message || 'Unable to open Clerk sign-up.');
     }
   };
 
   return (
     <Box sx={{ mb: 3 }}>
-      <Button
-        variant="contained"
-        color="secondary"
-        fullWidth
-        size="large"
-        sx={{ py: 1.5, borderRadius: 2, mb: 2 }}
-        onClick={handleClerkSignUp}
-      >
+      <Button variant="contained" fullWidth size="large"
+        sx={{ py: 1.5, borderRadius: 2, background: 'linear-gradient(135deg, #8b5cf6, #f472b6)', boxShadow: '0 0 20px rgba(139,92,246,0.3)', '&:hover': { background: 'linear-gradient(135deg, #7c4ae8, #e462a6)', transform: 'translateY(-2px)' }, transition: 'all 0.3s ease' }}
+        onClick={handleClerkSignUp}>
         Continue with Clerk
       </Button>
-      <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+      <Typography variant="body2" sx={{ color: '#64748b', textAlign: 'center', mt: 1 }}>
         Use Clerk for secure authentication. After signup, you will be redirected to login to complete the account bridge.
       </Typography>
     </Box>

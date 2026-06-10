@@ -20,154 +20,131 @@ const Footer = () => {
   return (
     <Box
       className="app-footer"
-      sx={(theme) => ({
+      sx={{
         mt: 6,
-        py: 4,
-        bgcolor: theme.palette.mode === 'light' ? 'var(--ink-900)' : 'background.paper',
-        color: theme.palette.mode === 'light' ? '#f7f4ef' : 'inherit',
-        borderTop: 1,
-        borderColor: theme.palette.mode === 'light' ? 'rgba(255,255,255,0.08)' : 'divider',
-        '& .MuiTypography-root': {
-          color: theme.palette.mode === 'light' ? '#ffffff' : 'inherit'
+        py: { xs: 4, md: 5 },
+        bgcolor: '#050510',
+        color: '#f1f5f9',
+        borderTop: '1px solid rgba(255,255,255,0.04)',
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(180deg, rgba(0,212,255,0.02), transparent)',
+          pointerEvents: 'none',
         },
-        '& .MuiTypography-colorTextSecondary': {
-          color: theme.palette.mode === 'light' ? '#ffffff' : 'text.secondary'
-        },
-        '& a': {
-          color: theme.palette.mode === 'light' ? '#ffffff' : 'inherit'
-        },
-        '& .MuiChip-root': {
-          bgcolor: theme.palette.mode === 'light' ? 'rgba(255,255,255,0.08)' : 'background.paper',
-          color: theme.palette.mode === 'light' ? '#ffffff' : 'inherit'
-        },
-        '& .MuiChip-icon': {
-          color: theme.palette.mode === 'light' ? '#ffffff' : 'inherit'
-        }
-      })}
+      }}
     >
-      <Container maxWidth="lg">
-        <Grid container spacing={3}>
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+        <Grid container spacing={4}>
+          {/* ── Brand ── */}
           <Grid item xs={12} md={4}>
-            <Typography variant="h6" gutterBottom>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                fontWeight: 800,
+                fontFamily: '"Fraunces", serif',
+                fontSize: '1.3rem',
+                background: 'linear-gradient(135deg, #00d4ff, #8b5cf6)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
               Voya
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: '#64748b', lineHeight: 1.8, maxWidth: 300 }}>
               Trusted travel companions for verified guides, security escorts, and
               destination support. Built for safety-first exploration.
             </Typography>
           </Grid>
 
+          {/* ── Company ── */}
           <Grid item xs={12} md={4}>
-            <Typography variant="subtitle1" gutterBottom>
-              Company
+            <Typography variant="subtitle1" gutterBottom sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '0.85rem', letterSpacing: 1 }}>
+              COMPANY
             </Typography>
-            <Stack spacing={0.5}>
-              <Link href="https://sharif-wp.github.io/github-portifolio/#" target="_blank" rel="noreferrer" underline="hover">
-              sharifssebuguzi.com
-              </Link>
-              <Typography variant="body2" color="text.secondary">
-                mulungiasher@gmail.com
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                sharifssebuguzi06@gmail.com
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                +256 704 451 552 (Asher Mulungi)
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                +256 751 077 107 (Sharif Ssebuguzi)
-              </Typography>
-            </Stack>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Typography variant="subtitle1" gutterBottom>
-              Sponsors
-            </Typography>
-            <Stack direction="row" spacing={1} flexWrap="wrap">
-              <Chip
-                label="UNWTO"
-                size="small"
-                icon={<Public fontSize="small" />}
-                component="a"
-                href="https://www.unwto.org/"
-                target="_blank"
-                rel="noreferrer"
-                clickable
-                sx={{
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                  '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 6px 16px rgba(15, 27, 45, 0.12)' }
-                }}
-              />
-
-              <Chip
-                label="SHARIF SSEBUGUZI"
-                size="small"
-                icon={<Public fontSize="small" />}
-                component="a"
+            <Stack spacing={1}>
+              <Link
                 href="https://sharif-wp.github.io/github-portifolio/#"
                 target="_blank"
                 rel="noreferrer"
-                clickable
-                sx={{
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                  '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 6px 16px rgba(15, 27, 45, 0.12)' }
-                }}
-              />
+                sx={{ color: '#64748b', textDecoration: 'none', fontSize: '0.85rem', '&:hover': { color: '#00d4ff' }, transition: 'color 0.2s ease' }}
+              >
+                sharifssebuguzi.com
+              </Link>
+              {[
+                'mulungiasher@gmail.com',
+                'sharifssebuguzi06@gmail.com',
+                '+256 704 451 552 (Asher Mulungi)',
+                '+256 751 077 107 (Sharif Ssebuguzi)',
+              ].map((contact) => (
+                <Typography key={contact} variant="body2" sx={{ color: '#64748b', fontSize: '0.8rem' }}>
+                  {contact}
+                </Typography>
+              ))}
+            </Stack>
+          </Grid>
 
-              <Chip
-                label="UNESCO"
-                size="small"
-                icon={<VerifiedUser fontSize="small" />}
-                component="a"
-                href="https://www.unesco.org/"
-                target="_blank"
-                rel="noreferrer"
-                clickable
-                sx={{
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                  '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 6px 16px rgba(15, 27, 45, 0.12)' }
-                }}
-              />
-              <Chip
-                label="IATA"
-                size="small"
-                icon={<Flight fontSize="small" />}
-                component="a"
-                href="https://www.iata.org/"
-                target="_blank"
-                rel="noreferrer"
-                clickable
-                sx={{
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                  '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 6px 16px rgba(15, 27, 45, 0.12)' }
-                }}
-              />
-              <Chip
-                label="World Bank"
-                size="small"
-                icon={<Security fontSize="small" />}
-                component="a"
-                href="https://www.worldbank.org/"
-                target="_blank"
-                rel="noreferrer"
-                clickable
-                sx={{
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                  '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 6px 16px rgba(15, 27, 45, 0.12)' }
-                }}
-              />
+          {/* ── Sponsors ── */}
+          <Grid item xs={12} md={4}>
+            <Typography variant="subtitle1" gutterBottom sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '0.85rem', letterSpacing: 1 }}>
+              SPONSORS
+            </Typography>
+            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+              {[
+                { label: 'UNWTO', icon: <Public fontSize="small" />, href: 'https://www.unwto.org/' },
+                { label: 'SHARIF SSEBUGUZI', icon: <Public fontSize="small" />, href: 'https://sharif-wp.github.io/github-portifolio/#' },
+                { label: 'UNESCO', icon: <VerifiedUser fontSize="small" />, href: 'https://www.unesco.org/' },
+                { label: 'IATA', icon: <Flight fontSize="small" />, href: 'https://www.iata.org/' },
+                { label: 'World Bank', icon: <Security fontSize="small" />, href: 'https://www.worldbank.org/' },
+              ].map((chip) => (
+                <Chip
+                  key={chip.label}
+                  label={chip.label}
+                  size="small"
+                  icon={chip.icon}
+                  component="a"
+                  href={chip.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  clickable
+                  sx={{
+                    bgcolor: 'rgba(255,255,255,0.03)',
+                    color: '#64748b',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      bgcolor: 'rgba(0,212,255,0.06)',
+                      borderColor: 'rgba(0,212,255,0.2)',
+                      color: '#00d4ff',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 0 16px rgba(0,212,255,0.15)',
+                    },
+                    '& .MuiChip-icon': {
+                      color: 'inherit',
+                    },
+                  }}
+                />
+              ))}
             </Stack>
           </Grid>
         </Grid>
 
-        <Divider sx={{ my: 3 }} />
-        <Typography variant="caption" color="text.secondary">
-          Copyright © {new Date().getFullYear()} Voya. All rights reserved.
-        </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
-          Built by Ssebuguzi Sharif
-        </Typography>
+        <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.04)' }} />
+
+        <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} spacing={1}>
+          <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.75rem' }}>
+            Copyright © {new Date().getFullYear()} Voya. All rights reserved.
+          </Typography>
+          <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.75rem' }}>
+            Built by{' '}
+            <Box component="span" sx={{ color: '#64748b', '&:hover': { color: '#8b5cf6' }, transition: 'color 0.2s ease' }}>
+              Ssebuguzi Sharif
+            </Box>
+          </Typography>
+        </Stack>
       </Container>
     </Box>
   );
