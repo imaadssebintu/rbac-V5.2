@@ -918,7 +918,7 @@ const Landing = ({ initialAuthMode }) => {
                         variant="text"
                         size="small"
                         endIcon={<ChevronRight />}
-                        sx={{ mt: 1.5, fontWeight: 600, p: 0, color: accent, '&:hover': { color: '#fff' } }}
+                        sx={{ mt: 1.5, fontWeight: 600, p: 0, color: accent, '&:hover': { color: 'var(--voy-text)' } }}
                         onClick={() => { setActiveStory(card); setStoryDialogOpen(true); }}
                       >
                         {t.storyButton}
