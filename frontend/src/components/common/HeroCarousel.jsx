@@ -1,36 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, useTheme } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation, Pagination } from 'swiper/modules';
+import { Autoplay, Navigation, Pagination, EffectCoverflow } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import 'swiper/css/effect-coverflow';
 
 const HeroCarousel = ({ images, autoPlay = true, interval = 5000 }) => {
   const theme = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    if (images && images.length > 0) {
-      setIsLoaded(true);
-    }
-  }, [images]);
 
   if (!images || images.length === 0) {
     return (
       <Box
         sx={{
-          height: { xs: 300, md: 500 },
+          height: { xs: 260, md: 420 },
           width: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          bgcolor: theme.palette.mode === 'dark' ? 'grey.900' : 'grey.100',
-          borderRadius: 4
+          bgcolor: theme.palette.mode === 'dark' ? 'rgba(21,28,38,0.8)' : 'rgba(245,247,250,0.8)',
+          borderRadius: 4,
+          border: 1,
+          borderColor: 'divider'
         }}
       >
-        <Typography variant="h6" color="text.secondary">
+        <Typography variant="body1" color="text.secondary">
           Loading images...
         </Typography>
       </Box>
@@ -45,32 +41,29 @@ const HeroCarousel = ({ images, autoPlay = true, interval = 5000 }) => {
         loop={images.length > 1}
         autoplay={autoPlay ? { delay: interval, disableOnInteraction: false } : false}
         navigation={images.length > 1}
-        pagination={{ clickable: true }}
-        modules={[Autoplay, Navigation, Pagination]}
+        pagination={{ clickable: true, dynamicBullets: true }}
+        modules={[Autoplay, Navigation, Pagination, EffectCoverflow]}
         onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
         style={{
-          '--swiper-navigation-color': theme.palette.primary.main,
-          '--swiper-pagination-color': theme.palette.primary.main,
-          '--swiper-pagination-bullet-inactive-color': theme.palette.grey[400],
+          '--swiper-navigation-color': '#fff',
+          '--swiper-pagination-color': '#fff',
+          '--swiper-pagination-bullet-inactive-color': 'rgba(255,255,255,0.5)',
           '--swiper-pagination-bullet-inactive-opacity': '1',
-          '--swiper-pagination-bullet-size': '8px',
-          '--swiper-pagination-bullet-horizontal-gap': '6px'
+          '--swiper-pagination-bullet-size': '10px',
+          '--swiper-pagination-bullet-horizontal-gap': '6px',
+          borderRadius: '20px',
+          overflow: 'hidden'
         }}
       >
         {images.map((image, index) => (
           <SwiperSlide key={index}>
-            <Card
+            <Box
               sx={{
-                height: { xs: 300, md: 500 },
+                height: { xs: 260, md: 420 },
                 width: '100%',
                 position: 'relative',
                 overflow: 'hidden',
-                borderRadius: 4,
-                boxShadow: 'var(--shadow-soft)',
-                '&:hover': {
-                  transform: 'scale(1.02)',
-                  transition: 'transform 0.3s ease'
-                }
+                borderRadius: 4
               }}
             >
               <Box
@@ -82,48 +75,44 @@ const HeroCarousel = ({ images, autoPlay = true, interval = 5000 }) => {
                   height: '100%',
                   objectFit: 'cover',
                   objectPosition: 'center',
-                  filter: 'brightness(0.8)'
+                  transition: 'transform 0.6s ease',
+                  '&:hover': { transform: 'scale(1.05)' }
                 }}
                 onError={(e) => {
                   e.target.src = 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80';
                 }}
               />
-              <CardContent
+              {/* Gradient overlay */}
+              <Box
                 sx={{
                   position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0))',
-                  color: 'white',
-                  padding: { xs: 2, md: 4 }
+                  inset: 0,
+                  background: 'linear-gradient(135deg, rgba(11,110,153,0.15) 0%, rgba(242,140,40,0.15) 100%)',
+                  borderRadius: 4
                 }}
-              >
-                <Typography variant="h4" component="div" sx={{ fontWeight: 700 }}>
-                  Explore the World
-                </Typography>
-                <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
-                  Safe travels with verified companions
-                </Typography>
-              </CardContent>
-            </Card>
+              />
+            </Box>
           </SwiperSlide>
         ))}
       </Swiper>
       
-      {/* Slide indicator */}
+      {/* Slide indicator badge */}
       {images.length > 1 && (
         <Box
           sx={{
             position: 'absolute',
-            top: 16,
+            bottom: 16,
             right: 16,
-            bgcolor: 'rgba(0, 0, 0, 0.5)',
+            bgcolor: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(8px)',
             color: 'white',
-            padding: '4px 8px',
-            borderRadius: 2,
-            fontSize: '0.875rem',
-            zIndex: 10
+            px: 1.5,
+            py: 0.5,
+            borderRadius: 6,
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            zIndex: 10,
+            letterSpacing: 0.5
           }}
         >
           {currentIndex + 1} / {images.length}

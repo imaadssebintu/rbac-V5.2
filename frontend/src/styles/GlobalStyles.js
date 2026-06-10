@@ -24,16 +24,12 @@ export const GlobalStyles = createGlobalStyle`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.3s ease;
-    background: radial-gradient(1200px 800px at 10% -10%, rgba(47, 191, 143, 0.18), transparent 60%),
-      radial-gradient(900px 700px at 110% 10%, rgba(242, 140, 40, 0.2), transparent 55%),
-      var(--sand-50);
+    background: var(--sand-50);
     color: var(--ink-900);
   }
 
   body[data-theme='dark'] {
-    background: radial-gradient(1200px 800px at 10% -10%, rgba(79, 195, 247, 0.08), transparent 60%),
-      radial-gradient(900px 700px at 110% 10%, rgba(242, 166, 90, 0.12), transparent 55%),
-      #0d1117;
+    background: #0d1117;
     color: #e6edf3;
   }
 
