@@ -138,6 +138,7 @@ import tripRoutes from './routes/trips.js';
 import complaintRoutes from './routes/complaints.js';
 import adminRoutes from './routes/admin.js';
 import mediaRoutes from './routes/media.js';
+import sitemapRoutes from './routes/sitemap.js';
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -159,6 +160,7 @@ app.use('/api/trips', tripRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/media', mediaRoutes);
+app.use('/api/sitemap', sitemapRoutes);
 
 app.get('/api/vapid-public-key', (req, res) => {
     const vapidKey = process.env.VAPID_PUBLIC_KEY || process.env.REACT_APP_VAPID_PUBLIC_KEY || process.env.VAPID_KEY;

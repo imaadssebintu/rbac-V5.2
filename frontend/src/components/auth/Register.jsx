@@ -21,11 +21,11 @@ const GlassCard = ({ children, sx }) => (
   <Card
     sx={{
       borderRadius: 3,
-      background: 'rgba(255,255,255,0.03)',
+      background: 'var(--voy-surface)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255,255,255,0.06)',
-      boxShadow: '0 0 40px rgba(0,0,0,0.3)',
+      border: '1px solid var(--voy-border)',
+      boxShadow: 'var(--voy-shadow)',
       ...sx,
     }}
   >
@@ -46,15 +46,15 @@ const neonBtn = {
 
 const darkInput = {
   '& .MuiOutlinedInput-root': {
-    bgcolor: 'rgba(255,255,255,0.03)',
-    '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
-    '&:hover fieldset': { borderColor: 'rgba(0,212,255,0.3)' },
-    '&.Mui-focused fieldset': { borderColor: '#00d4ff', borderWidth: '1px' },
-    '& input': { color: '#f1f5f9' },
-    '& textarea': { color: '#f1f5f9' },
-    '& .MuiInputAdornment-root': { color: '#64748b' },
+    bgcolor: 'var(--voy-input-bg)',
+    '& fieldset': { borderColor: 'var(--voy-input-border)' },
+    '&:hover fieldset': { borderColor: 'var(--voy-input-hover-border)' },
+    '&.Mui-focused fieldset': { borderColor: 'var(--voy-input-focus-border)', borderWidth: '1px' },
+    '& input': { color: 'var(--voy-text)' },
+    '& textarea': { color: 'var(--voy-text)' },
+    '& .MuiInputAdornment-root': { color: 'var(--voy-text-muted)' },
   },
-  '& .MuiInputLabel-root': { color: '#64748b', '&.Mui-focused': { color: '#00d4ff' } },
+  '& .MuiInputLabel-root': { color: 'var(--voy-text-muted)', '&.Mui-focused': { color: 'var(--voy-input-focus-border)' } },
   '& .MuiFormHelperText-root': { color: '#f472b6' },
 };
 
@@ -189,8 +189,8 @@ const Register = ({ onClose }) => {
         return (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             <FormControl error={!!errors.role}>
-              <Typography variant="subtitle2" sx={{ color: '#94a3b8', mb: 1, fontWeight: 600 }}>
-                I want to join as:
+            <Typography variant="subtitle2" sx={{ color: 'var(--voy-nav-text)', mb: 1, fontWeight: 600 }}>
+              I want to join as:
               </Typography>
               <RadioGroup name="role" value={formData.role} onChange={handleChange}
                 sx={{ flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-around', gap: { xs: 1, sm: 0 } }}>
@@ -202,7 +202,7 @@ const Register = ({ onClose }) => {
                   <FormControlLabel key={opt.value} value={opt.value} control={<Radio sx={{ color: '#64748b', '&.Mui-checked': { color: '#00d4ff' } }} />}
                     label={
                       <Box sx={{ textAlign: 'center', px: 1 }}>
-                        <Box sx={{ color: formData.role === opt.value ? '#00d4ff' : '#64748b', filter: formData.role === opt.value ? 'drop-shadow(0 0 12px rgba(0,212,255,0.4))' : 'none', transition: 'all 0.3s ease' }}>
+                        <Box sx={{ color: formData.role === opt.value ? '#00d4ff' : 'var(--voy-text-muted)', filter: formData.role === opt.value ? 'drop-shadow(0 0 12px rgba(0,212,255,0.4))' : 'none', transition: 'all 0.3s ease' }}>
                           {React.cloneElement(opt.icon, { sx: { fontSize: { xs: 28, md: 36 } } })}
                         </Box>
                         <Typography sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, color: '#f1f5f9', fontWeight: 600 }}>{opt.title}</Typography>
@@ -213,9 +213,7 @@ const Register = ({ onClose }) => {
                 ))}
               </RadioGroup>
               {errors.role && <FormHelperText sx={{ color: '#f472b6' }}>{errors.role}</FormHelperText>}
-            </FormControl>
-
-            <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)' }} />
+            </FormControl>              <Divider sx={{ borderColor: 'var(--voy-divider)' }} />
 
             <TextField fullWidth label="Your Location" name="location" size="small"
               value={formData.location} onChange={handleChange} error={!!errors.location} helperText={errors.location}
@@ -235,11 +233,11 @@ const Register = ({ onClose }) => {
                 <TextField fullWidth label="Trip Purpose" name="tripPurpose" size="small"
                   value={formData.tripPurpose} onChange={handleChange} placeholder="Business, leisure, study, relocation..." sx={darkInput} />
                 <FormControl>
-                  <Typography variant="subtitle2" sx={{ color: '#94a3b8', mb: 0.5, fontWeight: 600 }}>Support Needed</Typography>
+                  <Typography variant="subtitle2" sx={{ color: 'var(--voy-nav-text)', mb: 0.5, fontWeight: 600 }}>Support Needed</Typography>
                   {supportNeedsOptions.map((need) => (
                     <FormControlLabel key={need} control={<Checkbox checked={formData.supportNeeds.includes(need)}
                       onChange={(e) => { const n = e.target.checked ? [...formData.supportNeeds, need] : formData.supportNeeds.filter(s => s !== need); setFormData(p => ({ ...p, supportNeeds: n })); }}
-                      sx={{ color: '#64748b', '&.Mui-checked': { color: '#00d4ff' } }} />}
+                      sx={{ color: 'var(--voy-text-muted)', '&.Mui-checked': { color: '#00d4ff' } }} />}
                       label={<Typography variant="body2" sx={{ color: '#cbd5e1' }}>{need}</Typography>} />
                   ))}
                 </FormControl>
@@ -251,16 +249,16 @@ const Register = ({ onClose }) => {
                 <TextField fullWidth select label="Experience Level" name="experience" size="small"
                   value={formData.experience} onChange={handleChange} error={!!errors.experience} helperText={errors.experience}
                   sx={darkInput}
-                  SelectProps={{ MenuProps: { PaperProps: { sx: { bgcolor: 'rgba(15,15,30,0.95)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)' } } } }}>
+                  SelectProps={{ MenuProps: { PaperProps: { sx: { bgcolor: 'var(--voy-menu-bg)', backdropFilter: 'blur(20px)', border: '1px solid var(--voy-menu-border)' } } } }}>
                   <MenuItem value=""><em>Select experience</em></MenuItem>
-                  <MenuItem value="beginner" sx={{ color: '#cbd5e1' }}>Beginner (0-1 years)</MenuItem>
-                  <MenuItem value="intermediate" sx={{ color: '#cbd5e1' }}>Intermediate (1-3 years)</MenuItem>
-                  <MenuItem value="experienced" sx={{ color: '#cbd5e1' }}>Experienced (3+ years)</MenuItem>
-                  <MenuItem value="professional" sx={{ color: '#cbd5e1' }}>Professional (5+ years)</MenuItem>
+                  <MenuItem value="beginner" sx={{ color: 'var(--voy-text-secondary)' }}>Beginner (0-1 years)</MenuItem>
+                  <MenuItem value="intermediate" sx={{ color: 'var(--voy-text-secondary)' }}>Intermediate (1-3 years)</MenuItem>
+                  <MenuItem value="experienced" sx={{ color: 'var(--voy-text-secondary)' }}>Experienced (3+ years)</MenuItem>
+                  <MenuItem value="professional" sx={{ color: 'var(--voy-text-secondary)' }}>Professional (5+ years)</MenuItem>
                 </TextField>
 
                 <FormControl>
-                  <Typography variant="subtitle2" sx={{ color: '#94a3b8', mb: 0.5, fontWeight: 600 }}>Guide Skills</Typography>
+                  <Typography variant="subtitle2" sx={{ color: 'var(--voy-nav-text)', mb: 0.5, fontWeight: 600 }}>Guide Skills</Typography>
                   {guideSkillsOptions.map((skill) => (
                     <FormControlLabel key={skill} control={<Checkbox checked={formData.guideSkills.includes(skill)}
                       onChange={(e) => { const s = e.target.checked ? [...formData.guideSkills, skill] : formData.guideSkills.filter(x => x !== skill); setFormData(p => ({ ...p, guideSkills: s })); }}
@@ -270,7 +268,7 @@ const Register = ({ onClose }) => {
                 </FormControl>
 
                 <FormControl>
-                  <Typography variant="subtitle2" sx={{ color: '#94a3b8', mb: 0.5, fontWeight: 600 }}>Languages Spoken</Typography>
+                  <Typography variant="subtitle2" sx={{ color: 'var(--voy-nav-text)', mb: 0.5, fontWeight: 600 }}>Languages Spoken</Typography>
                   {languageOptions.map((lang) => (
                     <FormControlLabel key={lang} control={<Checkbox checked={formData.languages.includes(lang)}
                       onChange={(e) => { const l = e.target.checked ? [...formData.languages, lang] : formData.languages.filter(x => x !== lang); setFormData(p => ({ ...p, languages: l })); }}
@@ -290,9 +288,7 @@ const Register = ({ onClose }) => {
                   value={formData.adminRole} onChange={handleChange} error={!!errors.adminRole} helperText={errors.adminRole}
                   placeholder="Operations, safety, compliance..." sx={darkInput} />
               </>
-            )}
-
-            <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)' }} />
+            )}              <Divider sx={{ borderColor: 'var(--voy-divider)' }} />
 
             <FormControl error={!!errors.acceptTerms}>
               <FormControlLabel control={<Checkbox checked={formData.acceptTerms} onChange={handleChange} name="acceptTerms"
@@ -308,7 +304,7 @@ const Register = ({ onClose }) => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#050510', minHeight: '100vh', color: '#f1f5f9', py: { xs: 3, md: 6 } }}>
+    <Box sx={{ bgcolor: 'var(--voy-bg)', minHeight: '100vh', color: 'var(--voy-text)', py: { xs: 3, md: 6 } }}>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: { xs: 2, md: 4 }, px: 2 }}>
         <Box sx={{ textAlign: 'center' }}>
           <Groups sx={{ fontSize: { xs: 40, md: 60 }, color: '#8b5cf6', mb: 1.5, filter: 'drop-shadow(0 0 20px rgba(139,92,246,0.4))' }} />
@@ -322,7 +318,7 @@ const Register = ({ onClose }) => {
               Voya
             </Box>
           </Typography>
-          <Typography variant="body1" sx={{ color: '#64748b', fontSize: { xs: '0.9rem', md: '1rem' } }}>
+          <Typography variant="body1" sx={{ color: 'var(--voy-text-muted)', fontSize: { xs: '0.9rem', md: '1rem' } }}>
             Create your account in 3 simple steps
           </Typography>
         </Box>
@@ -334,9 +330,9 @@ const Register = ({ onClose }) => {
             {/* Stepper */}
             <Stepper activeStep={activeStep} sx={{
               mb: { xs: 2, md: 4 },
-              '& .MuiStepLabel-label': { fontSize: { xs: '0.7rem', md: '0.875rem' }, color: '#64748b', '&.Mui-active': { color: '#00d4ff' }, '&.Mui-completed': { color: '#8b5cf6' } },
-              '& .MuiStepIcon-root': { fontSize: { xs: '1.2rem', md: '1.5rem' }, color: 'rgba(255,255,255,0.1)', '&.Mui-active': { color: '#00d4ff' }, '&.Mui-completed': { color: '#8b5cf6' } },
-              '& .MuiStepConnector-line': { borderColor: 'rgba(255,255,255,0.06)' },
+              '& .MuiStepLabel-label': { fontSize: { xs: '0.7rem', md: '0.875rem' }, color: 'var(--voy-text-muted)', '&.Mui-active': { color: '#00d4ff' }, '&.Mui-completed': { color: '#8b5cf6' } },
+              '& .MuiStepIcon-root': { fontSize: { xs: '1.2rem', md: '1.5rem' }, color: 'var(--voy-text-muted)', '&.Mui-active': { color: '#00d4ff' }, '&.Mui-completed': { color: '#8b5cf6' } },
+              '& .MuiStepConnector-line': { borderColor: 'var(--voy-divider)' },
             }}>
               {steps.map((label) => (
                 <Step key={label}><StepLabel>{label}</StepLabel></Step>
@@ -356,7 +352,7 @@ const Register = ({ onClose }) => {
 
               <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', sm: 'row' }, justifyContent: 'space-between', mt: 4, gap: { xs: 1.5, sm: 0 } }}>
                 <Button variant="outlined" startIcon={<ArrowBack />} onClick={handleBack} disabled={activeStep === 0 || loading}
-                  sx={{ width: { xs: '100%', sm: 'auto' }, borderColor: 'rgba(255,255,255,0.15)', color: '#cbd5e1', '&:hover': { borderColor: '#00d4ff', color: '#00d4ff', bgcolor: 'rgba(0,212,255,0.05)' } }}>
+                  sx={{ width: { xs: '100%', sm: 'auto' }, borderColor: 'var(--voy-border-strong)', color: 'var(--voy-text-secondary)', '&:hover': { borderColor: '#00d4ff', color: '#00d4ff', bgcolor: 'rgba(0,212,255,0.05)' } }}>
                   Back
                 </Button>
                 <Button type="submit" variant="contained" endIcon={activeStep === steps.length - 1 ? null : <ArrowForward />} disabled={loading}
@@ -367,7 +363,7 @@ const Register = ({ onClose }) => {
             </form>
 
             <Box sx={{ mt: { xs: 2, md: 4 }, textAlign: 'center' }}>
-              <Typography variant="body2" sx={{ color: '#64748b' }}>
+              <Typography variant="body2" sx={{ color: 'var(--voy-text-muted)' }}>
                 Already have an account?{' '}
                 <Link component="button" type="button" sx={{ color: '#00d4ff', textDecoration: 'none', cursor: 'pointer', border: 'none', background: 'none', p: 0, fontWeight: 600, '&:hover': { color: '#8b5cf6' } }}
                   onClick={(event) => { event.preventDefault(); if (onClose) onClose(); navigate('/login', { replace: true }); }}>
@@ -390,7 +386,7 @@ const Register = ({ onClose }) => {
                   ✅ For Guides:
                 </Typography>
                 {['Earn income supporting travelers', 'Build a verified reputation', 'Get matched with relevant trips'].map((item) => (
-                  <Typography key={item} variant="caption" component="div" sx={{ color: '#64748b', fontSize: { xs: '0.7rem', md: '0.75rem' }, lineHeight: 1.8 }}>
+                  <Typography key={item} variant="caption" component="div" sx={{ color: 'var(--voy-text-muted)', fontSize: { xs: '0.7rem', md: '0.75rem' }, lineHeight: 1.8 }}>
                     • {item}
                   </Typography>
                 ))}
@@ -400,7 +396,7 @@ const Register = ({ onClose }) => {
                   ✅ For Travelers:
                 </Typography>
                 {['Find trusted local guides', 'Travel safely with support', 'Get on-demand assistance'].map((item) => (
-                  <Typography key={item} variant="caption" component="div" sx={{ color: '#64748b', fontSize: { xs: '0.7rem', md: '0.75rem' }, lineHeight: 1.8 }}>
+                  <Typography key={item} variant="caption" component="div" sx={{ color: 'var(--voy-text-muted)', fontSize: { xs: '0.7rem', md: '0.75rem' }, lineHeight: 1.8 }}>
                     • {item}
                   </Typography>
                 ))}
@@ -437,8 +433,7 @@ const ClerkRegisterButton = ({ role, setRegisterError }) => {
         sx={{ py: 1.5, borderRadius: 2, background: 'linear-gradient(135deg, #8b5cf6, #f472b6)', boxShadow: '0 0 20px rgba(139,92,246,0.3)', '&:hover': { background: 'linear-gradient(135deg, #7c4ae8, #e462a6)', transform: 'translateY(-2px)' }, transition: 'all 0.3s ease' }}
         onClick={handleClerkSignUp}>
         Continue with Clerk
-      </Button>
-      <Typography variant="body2" sx={{ color: '#64748b', textAlign: 'center', mt: 1 }}>
+      </Button>              <Typography variant="body2" sx={{ color: 'var(--voy-text-muted)', textAlign: 'center', mt: 1 }}>
         Use Clerk for secure authentication. After signup, you will be redirected to login to complete the account bridge.
       </Typography>
     </Box>

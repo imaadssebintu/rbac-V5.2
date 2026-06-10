@@ -120,10 +120,10 @@ const GlassCard = ({ children, sx, glowColor = 'rgba(0,212,255,0.15)', onClick }
     sx={{
       height: '100%',
       borderRadius: 3,
-      background: 'rgba(255,255,255,0.03)',
+      background: 'var(--voy-surface)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255,255,255,0.06)',
+      border: '1px solid var(--voy-border)',
       transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
       cursor: onClick ? 'pointer' : 'default',
       '&:hover': onClick
@@ -256,8 +256,7 @@ const Landing = ({ initialAuthMode }) => {
     transition: 'all 0.3s ease',
   };
 
-  return (
-    <Box sx={{ bgcolor: '#050510', minHeight: '100vh', color: '#f1f5f9', overflow: 'hidden' }}>
+  return (      <Box sx={{ bgcolor: 'var(--voy-bg)', minHeight: '100vh', color: 'var(--voy-text)', overflow: 'hidden' }}>
       {/* SEO meta tags */}
       <SEO
         title="Safe Travel with Verified Companions"
@@ -337,8 +336,8 @@ const Landing = ({ initialAuthMode }) => {
           right: 0,
           zIndex: 1100,
           backdropFilter: scrolled ? 'blur(24px)' : 'blur(0px)',
-          bgcolor: scrolled ? 'rgba(5,5,16,0.88)' : 'transparent',
-          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+          bgcolor: scrolled ? 'var(--voy-nav-bg)' : 'transparent',
+          borderBottom: scrolled ? '1px solid var(--voy-nav-border)' : '1px solid transparent',
           transition: 'all 0.4s ease',
         }}
       >
@@ -378,14 +377,14 @@ const Landing = ({ initialAuthMode }) => {
             >
               {t.getStarted}
             </Button>
-            <IconButton onClick={() => setMobileMenuOpen(true)} size="small" sx={{ color: '#f1f5f9' }}>
+            <IconButton onClick={() => setMobileMenuOpen(true)} size="small" sx={{ color: 'var(--voy-text)' }}>
               <MenuIcon />
             </IconButton>
           </Box>
 
           {/* ── Desktop ── */}
           <Stack direction="row" spacing={0.5} alignItems="center" sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Button sx={{ color: '#94a3b8', fontWeight: 500, fontSize: '0.82rem', textTransform: 'none', '&:hover': { color: '#00d4ff' } }}
+            <Button sx={{ color: 'var(--voy-nav-text)', fontWeight: 500, fontSize: '0.82rem', textTransform: 'none', '&:hover': { color: '#00d4ff' } }}
               endIcon={<ExpandMore />} onClick={(e) => setAnchorEl(e.currentTarget)}>
               {t.services}
             </Button>
@@ -393,15 +392,14 @@ const Landing = ({ initialAuthMode }) => {
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={() => setAnchorEl(null)}
-              PaperProps={{ sx: { bgcolor: 'rgba(15,15,30,0.95)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2, mt: 1 } }}
+              PaperProps={{ sx: { bgcolor: 'var(--voy-menu-bg)', backdropFilter: 'blur(20px)', border: '1px solid var(--voy-menu-border)', borderRadius: 2, mt: 1 } }}
             >
               {[
                 { key: 'guides', label: t.servicesMenu.guides },
                 { key: 'security', label: t.servicesMenu.security },
                 { key: 'agency', label: t.servicesMenu.agency },
-              ].map((item) => (
-                <MenuItem key={item.key} sx={{ color: '#cbd5e1', '&:hover': { bgcolor: 'rgba(0,212,255,0.08)', color: '#00d4ff' } }}
-                  onClick={() => { setAnchorEl(null); navigate(`/guides?service=${item.key}`); }}>
+              ].map((item) => (                  <MenuItem key={item.key} sx={{ color: 'var(--voy-text-secondary)', '&:hover': { bgcolor: 'rgba(0,212,255,0.08)', color: '#00d4ff' } }}
+                    onClick={() => { setAnchorEl(null); navigate(`/guides?service=${item.key}`); }}>
                   {item.label}
                 </MenuItem>
               ))}
@@ -412,18 +410,18 @@ const Landing = ({ initialAuthMode }) => {
               { label: t.safety, id: 'safety' },
               { label: t.stories, id: 'stories' },
             ].map((link) => (
-              <Button key={link.label} sx={{ color: '#94a3b8', fontWeight: 500, fontSize: '0.82rem', textTransform: 'none', '&:hover': { color: '#00d4ff' } }}
+              <Button key={link.label} sx={{ color: 'var(--voy-nav-text)', fontWeight: 500, fontSize: '0.82rem', textTransform: 'none', '&:hover': { color: '#00d4ff' } }}
                 onClick={() => scrollTo(link.id)}>
                 {link.label}
               </Button>
             ))}
 
-            <Button sx={{ color: '#94a3b8', fontWeight: 500, fontSize: '0.82rem', textTransform: 'none', '&:hover': { color: '#00d4ff' } }}
+            <Button sx={{ color: 'var(--voy-nav-text)', fontWeight: 500, fontSize: '0.82rem', textTransform: 'none', '&:hover': { color: '#00d4ff' } }}
               onClick={() => setSettingsPromptOpen(true)}>
               {t.settings}
             </Button>
 
-            <Divider orientation="vertical" flexItem sx={{ mx: 1, borderColor: 'rgba(255,255,255,0.08)' }} />
+            <Divider orientation="vertical" flexItem sx={{ mx: 1, borderColor: 'var(--voy-divider)' }} />
 
             {/* Login */}
             {user ? (
@@ -432,7 +430,7 @@ const Landing = ({ initialAuthMode }) => {
               </Button>
             ) : (
               <Button variant="outlined" size="small"
-                sx={{ borderRadius: 8, fontSize: '0.78rem', borderColor: 'rgba(255,255,255,0.15)', color: '#cbd5e1', '&:hover': { borderColor: '#00d4ff', color: '#00d4ff' } }}
+                sx={{ borderRadius: 8, fontSize: '0.78rem', borderColor: 'var(--voy-border-strong)', color: 'var(--voy-text-secondary)', '&:hover': { borderColor: '#00d4ff', color: '#00d4ff' } }}
                 endIcon={<ExpandMore />} onClick={(e) => setLoginMenuEl(e.currentTarget)}>
                 {t.login}
               </Button>
@@ -441,14 +439,13 @@ const Landing = ({ initialAuthMode }) => {
               anchorEl={loginMenuEl}
               open={Boolean(loginMenuEl)}
               onClose={() => setLoginMenuEl(null)}
-              PaperProps={{ sx: { bgcolor: 'rgba(15,15,30,0.95)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2, mt: 1 } }}
+              PaperProps={{ sx: { bgcolor: 'var(--voy-menu-bg)', backdropFilter: 'blur(20px)', border: '1px solid var(--voy-menu-border)', borderRadius: 2, mt: 1 } }}
             >
               {[
                 { role: 'traveler', label: t.loginTraveler },
                 { role: 'guide', label: t.loginGuide },
                 { role: 'admin', label: t.loginAdmin },
-              ].map((item) => (
-                <MenuItem key={item.role} sx={{ color: '#cbd5e1', '&:hover': { bgcolor: 'rgba(0,212,255,0.08)', color: '#00d4ff' } }}
+              ].map((item) => (                  <MenuItem key={item.role} sx={{ color: 'var(--voy-text-secondary)', '&:hover': { bgcolor: 'rgba(0,212,255,0.08)', color: '#00d4ff' } }}
                   onClick={() => { setLoginMenuEl(null); setAuthRole(item.role); handleOpenAuth('login'); }}>
                   {item.label}
                 </MenuItem>
@@ -456,7 +453,7 @@ const Landing = ({ initialAuthMode }) => {
             </Menu>
 
             {/* Theme */}
-            <Button size="small" sx={{ borderRadius: 8, fontSize: '0.78rem', color: '#94a3b8', textTransform: 'none', '&:hover': { color: '#8b5cf6' } }}
+            <Button size="small" sx={{ borderRadius: 8, fontSize: '0.78rem', color: 'var(--voy-nav-text)', textTransform: 'none', '&:hover': { color: '#8b5cf6' } }}
               endIcon={<ExpandMore />} onClick={(e) => setThemeMenuEl(e.currentTarget)}>
               {t.theme}: {t[themeMode] || themeMode}
             </Button>
@@ -464,10 +461,10 @@ const Landing = ({ initialAuthMode }) => {
               anchorEl={themeMenuEl}
               open={Boolean(themeMenuEl)}
               onClose={() => setThemeMenuEl(null)}
-              PaperProps={{ sx: { bgcolor: 'rgba(15,15,30,0.95)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2 } }}
+              PaperProps={{ sx: { bgcolor: 'var(--voy-menu-bg)', backdropFilter: 'blur(20px)', border: '1px solid var(--voy-menu-border)', borderRadius: 2 } }}
             >
               {['light', 'dark', 'system'].map((mode) => (
-                <MenuItem key={mode} sx={{ color: '#cbd5e1', '&:hover': { bgcolor: 'rgba(139,92,246,0.08)', color: '#8b5cf6' } }}
+                <MenuItem key={mode} sx={{ color: 'var(--voy-text-secondary)', '&:hover': { bgcolor: 'rgba(139,92,246,0.08)', color: '#8b5cf6' } }}
                   onClick={() => { setThemeMode(mode); setThemeMenuEl(null); }}>
                   {t[mode]}
                 </MenuItem>
@@ -475,7 +472,7 @@ const Landing = ({ initialAuthMode }) => {
             </Menu>
 
             {/* Lang */}
-            <Button size="small" sx={{ borderRadius: 8, fontSize: '0.78rem', color: '#94a3b8', textTransform: 'none', '&:hover': { color: '#f472b6' } }}
+            <Button size="small" sx={{ borderRadius: 8, fontSize: '0.78rem', color: 'var(--voy-nav-text)', textTransform: 'none', '&:hover': { color: '#f472b6' } }}
               endIcon={<ExpandMore />} onClick={(e) => setLangMenuEl(e.currentTarget)}>
               {language}
             </Button>
@@ -483,10 +480,10 @@ const Landing = ({ initialAuthMode }) => {
               anchorEl={langMenuEl}
               open={Boolean(langMenuEl)}
               onClose={() => setLangMenuEl(null)}
-              PaperProps={{ sx: { bgcolor: 'rgba(15,15,30,0.95)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2 } }}
+              PaperProps={{ sx: { bgcolor: 'var(--voy-menu-bg)', backdropFilter: 'blur(20px)', border: '1px solid var(--voy-menu-border)', borderRadius: 2 } }}
             >
               {['EN', 'FR', 'DE', 'RU', 'ZH', 'KO', 'SW', 'LG'].map((lang) => (
-                <MenuItem key={lang} sx={{ color: '#cbd5e1', '&:hover': { bgcolor: 'rgba(244,114,182,0.08)', color: '#f472b6' } }}
+                <MenuItem key={lang} sx={{ color: 'var(--voy-text-secondary)', '&:hover': { bgcolor: 'rgba(244,114,182,0.08)', color: '#f472b6' } }}
                   onClick={() => { setLanguage(lang); setLangMenuEl(null); }}>
                   {lang}
                 </MenuItem>
@@ -495,8 +492,7 @@ const Landing = ({ initialAuthMode }) => {
 
             {/* CTA */}
             {!user && (
-              <Button variant="contained" size="small"
-                sx={{ borderRadius: 8, fontSize: '0.78rem', px: 2, ...neonBtn }}
+              <Button variant="contained" size="small"                    sx={{ borderRadius: 8, fontSize: '0.78rem', px: 2, ...neonBtn }}
                 onClick={() => handleOpenAuth('register')}>
                 {t.getStarted}
               </Button>
@@ -562,7 +558,7 @@ const Landing = ({ initialAuthMode }) => {
                     fontSize: { xs: '0.95rem', md: '1.05rem' },
                     lineHeight: 1.8,
                     maxWidth: 500,
-                    color: '#94a3b8',
+                    color: 'var(--voy-nav-text)',
                   }}
                 >
                   {t.heroBody}
@@ -594,8 +590,8 @@ const Landing = ({ initialAuthMode }) => {
                       py: { xs: 1.4, md: 1.6 },
                       px: { xs: 3, md: 4 },
                       borderRadius: 2,
-                      borderColor: 'rgba(255,255,255,0.15)',
-                      color: '#cbd5e1',
+                      borderColor: 'var(--voy-border-strong)',
+                      color: 'var(--voy-text-secondary)',
                       '&:hover': {
                         borderColor: '#8b5cf6',
                         bgcolor: 'rgba(139,92,246,0.08)',
@@ -614,7 +610,7 @@ const Landing = ({ initialAuthMode }) => {
             {/* Right */}
             <Grid item xs={12} md={6}>
               {loadingImages ? (
-                <Skeleton variant="rectangular" sx={{ height: { xs: 260, md: 420 }, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.03)' }} />
+                <Skeleton variant="rectangular" sx={{ height: { xs: 260, md: 420 }, borderRadius: 3, bgcolor: 'var(--voy-skeleton)' }} />
               ) : (
                 <HeroCarousel images={heroImages} autoPlay interval={5000} />
               )}
@@ -631,13 +627,12 @@ const Landing = ({ initialAuthMode }) => {
           py: { xs: 4, md: 5 },
           position: 'relative',
           zIndex: 1,
-          borderTop: '1px solid rgba(255,255,255,0.04)',
-          borderBottom: '1px solid rgba(255,255,255,0.04)',
+          borderTop: '1px solid var(--voy-border-light)',
+          borderBottom: '1px solid var(--voy-border-light)',
           '&::before': {
             content: '""',
             position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(90deg, rgba(0,212,255,0.02), transparent, rgba(139,92,246,0.02))',
+            inset: 0,                  background: 'linear-gradient(90deg, rgba(0,212,255,0.02), transparent, rgba(139,92,246,0.02))',
             pointerEvents: 'none',
           },
         }}
@@ -662,7 +657,7 @@ const Landing = ({ initialAuthMode }) => {
                 }}>
                   <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                 </Typography>
-                <Typography variant="body2" sx={{ fontSize: { xs: '0.7rem', md: '0.8rem' }, color: '#64748b', mt: 0.3 }}>
+                <Typography variant="body2" sx={{ fontSize: { xs: '0.7rem', md: '0.8rem' },                    color: 'var(--voy-text-muted)', mt: 0.3 }}>
                   {stat.label}
                 </Typography>
               </Grid>
@@ -731,10 +726,10 @@ const Landing = ({ initialAuthMode }) => {
                   <Typography variant="caption" sx={{ fontWeight: 600, letterSpacing: 2, color: item.color, opacity: 0.7 }}>
                     {item.step}
                   </Typography>
-                  <Typography variant="h6" sx={{ mt: 0.5, mb: 1.5, fontWeight: 700, color: '#f1f5f9' }}>
+                  <Typography variant="h6" sx={{ mt: 0.5, mb: 1.5, fontWeight: 700, color: 'var(--voy-text)' }}>
                     {item.title}
                   </Typography>
-                  <Typography variant="body2" sx={{ lineHeight: 1.8, color: '#64748b' }}>
+                  <Typography variant="body2" sx={{ lineHeight: 1.8, color: 'var(--voy-text-muted)' }}>
                     {item.desc}
                   </Typography>
                 </GlassCard>
@@ -798,10 +793,10 @@ const Landing = ({ initialAuthMode }) => {
                         {item.key === 'security' && <Shield />}
                         {item.key === 'global' && <Public />}
                       </Box>
-                      <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#f1f5f9' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: 'var(--voy-text)' }}>
                         {item.title}
                       </Typography>
-                      <Typography variant="body2" sx={{ lineHeight: 1.8, color: '#64748b' }}>
+                      <Typography variant="body2" sx={{ lineHeight: 1.8, color: 'var(--voy-text-muted)' }}>
                         {item.text}
                       </Typography>
                     </GlassCard>
@@ -824,7 +819,7 @@ const Landing = ({ initialAuthMode }) => {
                       position: 'relative',
                       borderRadius: 2,
                       overflow: 'hidden',
-                      border: '1px solid rgba(255,255,255,0.06)',
+                      border: '1px solid var(--voy-border)',
                       transition: 'all 0.4s ease',
                       '&:hover': {
                         borderColor: 'rgba(0,212,255,0.3)',
@@ -903,7 +898,7 @@ const Landing = ({ initialAuthMode }) => {
                     />
                     <CardContent sx={{ p: { xs: 2.5, md: 3 } }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#f1f5f9' }}>{card.name}</Typography>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'var(--voy-text)' }}>{card.name}</Typography>
                         <Chip
                           label={card.role}
                           size="small"
@@ -918,7 +913,7 @@ const Landing = ({ initialAuthMode }) => {
                           }}
                         />
                       </Box>
-                      <Typography variant="body2" sx={{ lineHeight: 1.7, color: '#64748b' }}>{card.story}</Typography>
+                      <Typography variant="body2" sx={{ lineHeight: 1.7, color: 'var(--voy-text-muted)' }}>{card.story}</Typography>
                       <Button
                         variant="text"
                         size="small"
@@ -970,7 +965,7 @@ const Landing = ({ initialAuthMode }) => {
           >
             Ready to Explore with Confidence?
           </Typography>
-          <Typography variant="body1" sx={{ mb: 4, maxWidth: 500, mx: 'auto', color: '#64748b', fontSize: { xs: '0.9rem', md: '1.05rem' } }}>
+          <Typography variant="body1" sx={{ mb: 4, maxWidth: 500, mx: 'auto',                    color: 'var(--voy-text-muted)', fontSize: { xs: '0.9rem', md: '1.05rem' } }}>
             Join thousands of travelers and verified guides. Your next adventure starts with a single step.
           </Typography>
           <Button
@@ -1001,9 +996,9 @@ const Landing = ({ initialAuthMode }) => {
         PaperProps={{
           sx: {
             width: 300,
-            bgcolor: 'rgba(5,5,16,0.96)',
+            bgcolor: 'var(--voy-drawer-bg)',
             backdropFilter: 'blur(24px)',
-            borderLeft: '1px solid rgba(255,255,255,0.06)',
+            borderLeft: '1px solid var(--voy-border)',
             p: 2,
           },
         }}
@@ -1015,12 +1010,11 @@ const Landing = ({ initialAuthMode }) => {
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>
             Voya
-          </Box>
-          <IconButton onClick={() => setMobileMenuOpen(false)} size="small" sx={{ color: '#f1f5f9' }}>
+          </Box>            <IconButton onClick={() => setMobileMenuOpen(false)} size="small" sx={{ color: 'var(--voy-text)' }}>
             <Close />
           </IconButton>
         </Box>
-        <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mb: 2 }} />
+        <Divider sx={{ borderColor: 'var(--voy-divider)', mb: 2 }} />
         <List>
           <ListItem disablePadding>
             <ListItemButton onClick={() => { setMobileMenuOpen(false); handleOpenAuth('register'); }}
@@ -1028,7 +1022,7 @@ const Landing = ({ initialAuthMode }) => {
               <ListItemText primary={t.getStarted} primaryTypographyProps={{ fontWeight: 700, color: '#00d4ff' }} />
             </ListItemButton>
           </ListItem>
-          <Divider sx={{ borderColor: 'rgba(255,255,255,0.04)', my: 1 }} />
+          <Divider sx={{ borderColor: 'var(--voy-divider-light)', my: 1 }} />
           {[
             { label: 'How it works', action: () => scrollTo('how-it-works') },
             { label: t.servicesMenu.guides, action: () => navigate('/guides?service=guides') },
@@ -1038,11 +1032,11 @@ const Landing = ({ initialAuthMode }) => {
             <ListItem key={item.label} disablePadding>
               <ListItemButton sx={{ '&:hover': { bgcolor: 'rgba(0,212,255,0.06)' } }}
                 onClick={() => { setMobileMenuOpen(false); item.action(); }}>
-                <ListItemText primary={item.label} sx={{ '& .MuiListItemText-primary': { color: '#cbd5e1' } }} />
+                <ListItemText primary={item.label} sx={{ '& .MuiListItemText-primary': { color: 'var(--voy-text-secondary)' } }} />
               </ListItemButton>
             </ListItem>
           ))}
-          <Divider sx={{ borderColor: 'rgba(255,255,255,0.04)', my: 1 }} />
+          <Divider sx={{ borderColor: 'var(--voy-divider-light)', my: 1 }} />
           {[
             { label: t.safety, action: () => scrollTo('safety') },
             { label: t.stories, action: () => scrollTo('stories') },
@@ -1051,14 +1045,14 @@ const Landing = ({ initialAuthMode }) => {
             <ListItem key={item.label} disablePadding>
               <ListItemButton sx={{ '&:hover': { bgcolor: 'rgba(139,92,246,0.06)' } }}
                 onClick={() => { setMobileMenuOpen(false); item.action(); }}>
-                <ListItemText primary={item.label} sx={{ '& .MuiListItemText-primary': { color: '#cbd5e1' } }} />
+                <ListItemText primary={item.label} sx={{ '& .MuiListItemText-primary': { color: 'var(--voy-text-secondary)' } }} />
               </ListItemButton>
             </ListItem>
           ))}
-          <Divider sx={{ borderColor: 'rgba(255,255,255,0.04)', my: 1 }} />
+          <Divider sx={{ borderColor: 'var(--voy-divider-light)', my: 1 }} />
           <ListItem disablePadding>
             <ListItemText primary={t.login} sx={{ px: 2, py: 0.5 }}
-              primaryTypographyProps={{ variant: 'overline', color: '#64748b', fontWeight: 700 }} />
+              primaryTypographyProps={{ variant: 'overline',                    color: 'var(--voy-text-muted)', fontWeight: 700 }} />
           </ListItem>
           {[
             { role: 'traveler', label: t.loginTraveler },
@@ -1068,14 +1062,14 @@ const Landing = ({ initialAuthMode }) => {
             <ListItem key={item.role} disablePadding>
               <ListItemButton sx={{ '&:hover': { bgcolor: 'rgba(0,212,255,0.06)' } }}
                 onClick={() => { setMobileMenuOpen(false); setAuthRole(item.role); handleOpenAuth('login'); }}>
-                <ListItemText primary={item.label} sx={{ '& .MuiListItemText-primary': { color: '#cbd5e1' } }} />
+                <ListItemText primary={item.label} sx={{ '& .MuiListItemText-primary': { color: 'var(--voy-text-secondary)' } }} />
               </ListItemButton>
             </ListItem>
           ))}
-          <Divider sx={{ borderColor: 'rgba(255,255,255,0.04)', my: 1 }} />
+          <Divider sx={{ borderColor: 'var(--voy-divider-light)', my: 1 }} />
           <ListItem disablePadding>
             <ListItemText primary={t.theme} sx={{ px: 2, py: 0.5 }}
-              primaryTypographyProps={{ variant: 'overline', color: '#64748b', fontWeight: 700 }} />
+              primaryTypographyProps={{ variant: 'overline',                    color: 'var(--voy-text-muted)', fontWeight: 700 }} />
           </ListItem>
           {['light', 'dark', 'system'].map((mode) => (
             <ListItem key={mode} disablePadding>
@@ -1086,17 +1080,17 @@ const Landing = ({ initialAuthMode }) => {
               </ListItemButton>
             </ListItem>
           ))}
-          <Divider sx={{ borderColor: 'rgba(255,255,255,0.04)', my: 1 }} />
+          <Divider sx={{ borderColor: 'var(--voy-divider-light)', my: 1 }} />
           <ListItem disablePadding>
             <ListItemText primary={t.language} sx={{ px: 2, py: 0.5 }}
-              primaryTypographyProps={{ variant: 'overline', color: '#64748b', fontWeight: 700 }} />
+              primaryTypographyProps={{ variant: 'overline',                    color: 'var(--voy-text-muted)', fontWeight: 700 }} />
           </ListItem>
           {['EN', 'FR', 'DE', 'RU', 'ZH', 'KO', 'SW', 'LG'].map((lang) => (
             <ListItem key={lang} disablePadding>
               <ListItemButton selected={language === lang}
                 sx={{ '&:hover': { bgcolor: 'rgba(244,114,182,0.06)' }, '&.Mui-selected': { bgcolor: 'rgba(244,114,182,0.1)' } }}
                 onClick={() => { setLanguage(lang); setMobileMenuOpen(false); }}>
-                <ListItemText primary={lang} sx={{ '& .MuiListItemText-primary': { color: language === lang ? '#f472b6' : '#cbd5e1' } }} />
+                <ListItemText primary={lang} sx={{ '& .MuiListItemText-primary': { color: language === lang ? '#f472b6' : 'var(--voy-text-secondary)' } }} />
               </ListItemButton>
             </ListItem>
           ))}
@@ -1107,10 +1101,9 @@ const Landing = ({ initialAuthMode }) => {
           DIALOGS
          ═══════════════════════════════════════════════════════════════ */}
       <Dialog open={authMode === 'login'} onClose={handleCloseAuth} fullWidth maxWidth="sm"
-        PaperProps={{ sx: { m: { xs: 1, sm: 2 }, borderRadius: 3, bgcolor: 'rgba(10,10,25,0.96)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.06)' } }}>
+        PaperProps={{ sx: { m: { xs: 1, sm: 2 }, borderRadius: 3, bgcolor: 'var(--voy-dialog-bg)', backdropFilter: 'blur(24px)', border: '1px solid var(--voy-border)' } }}>
         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6" sx={{ fontWeight: 700, color: '#f1f5f9' }}>{t.loginTitle}</Typography>
-          <IconButton onClick={handleCloseAuth} size="small" sx={{ color: '#94a3b8' }}><Close /></IconButton>
+          <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--voy-text)' }}>{t.loginTitle}</Typography>            <IconButton onClick={handleCloseAuth} size="small" sx={{ color: 'var(--voy-text-muted)' }}><Close /></IconButton>
         </DialogTitle>
         <DialogContent sx={{ p: { xs: 2, md: 3 } }}>
           <Login initialRole={authRole} />
@@ -1118,10 +1111,9 @@ const Landing = ({ initialAuthMode }) => {
       </Dialog>
 
       <Dialog open={authMode === 'register'} onClose={handleCloseAuth} fullWidth maxWidth="md"
-        PaperProps={{ sx: { m: { xs: 0.5, sm: 2 }, borderRadius: 3, bgcolor: 'rgba(10,10,25,0.96)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.06)' } }}>
+        PaperProps={{ sx: { m: { xs: 0.5, sm: 2 }, borderRadius: 3, bgcolor: 'var(--voy-dialog-bg)', backdropFilter: 'blur(24px)', border: '1px solid var(--voy-border)' } }}>
         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6" sx={{ fontWeight: 700, color: '#f1f5f9' }}>{t.registerTitle}</Typography>
-          <IconButton onClick={handleCloseAuth} size="small" sx={{ color: '#94a3b8' }}><Close /></IconButton>
+          <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--voy-text)' }}>{t.registerTitle}</Typography>            <IconButton onClick={handleCloseAuth} size="small" sx={{ color: 'var(--voy-text-muted)' }}><Close /></IconButton>
         </DialogTitle>
         <DialogContent sx={{ p: { xs: 0, md: 0 } }}>
           <Register onClose={handleCloseAuth} />
@@ -1129,13 +1121,13 @@ const Landing = ({ initialAuthMode }) => {
       </Dialog>
 
       <Dialog open={settingsPromptOpen} onClose={() => setSettingsPromptOpen(false)} fullWidth maxWidth="xs"
-        PaperProps={{ sx: { borderRadius: 3, bgcolor: 'rgba(10,10,25,0.96)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.06)' } }}>
-        <DialogTitle sx={{ fontWeight: 700, color: '#f1f5f9' }}>{t.settingsPromptTitle}</DialogTitle>
+        PaperProps={{ sx: { borderRadius: 3, bgcolor: 'var(--voy-dialog-bg)', backdropFilter: 'blur(24px)', border: '1px solid var(--voy-border)' } }}>
+        <DialogTitle sx={{ fontWeight: 700, color: 'var(--voy-text)' }}>{t.settingsPromptTitle}</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" sx={{ color: '#64748b', mb: 3 }}>{t.settingsPromptBody}</Typography>
+          <Typography variant="body2" sx={{ color: 'var(--voy-text-muted)', mb: 3 }}>{t.settingsPromptBody}</Typography>
           <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button onClick={() => setSettingsPromptOpen(false)} sx={{ color: '#64748b' }}>{t.settingsPromptCancel}</Button>
-            <Button variant="outlined" sx={{ borderColor: 'rgba(255,255,255,0.15)', color: '#cbd5e1', '&:hover': { borderColor: '#8b5cf6' } }}
+            <Button onClick={() => setSettingsPromptOpen(false)} sx={{ color: 'var(--voy-text-muted)' }}>{t.settingsPromptCancel}</Button>
+            <Button variant="outlined" sx={{ borderColor: 'var(--voy-border-strong)', color: 'var(--voy-text-secondary)', '&:hover': { borderColor: '#8b5cf6' } }}
               onClick={() => { setSettingsPromptOpen(false); setAuthRole('traveler'); handleOpenAuth('login'); }}>
               {t.settingsPromptLogin}
             </Button>
@@ -1148,18 +1140,18 @@ const Landing = ({ initialAuthMode }) => {
       </Dialog>
 
       <Dialog open={storyDialogOpen} onClose={() => setStoryDialogOpen(false)} fullWidth maxWidth="sm"
-        PaperProps={{ sx: { borderRadius: 3, bgcolor: 'rgba(10,10,25,0.96)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.06)' } }}>
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 700, color: '#f1f5f9' }}>
+        PaperProps={{ sx: { borderRadius: 3, bgcolor: 'var(--voy-dialog-bg)', backdropFilter: 'blur(24px)', border: '1px solid var(--voy-border)' } }}>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 700, color: 'var(--voy-text)' }}>
           {activeStory?.name || 'Story'}
-          <IconButton onClick={() => setStoryDialogOpen(false)} sx={{ color: '#94a3b8' }}><Close /></IconButton>
+          <IconButton onClick={() => setStoryDialogOpen(false)} sx={{ color: 'var(--voy-text-muted)' }}><Close /></IconButton>
         </DialogTitle>
         <DialogContent>
           {activeStory && (
             <>
               <Box component="img" src={activeStory.image} alt={activeStory.name}
-                sx={{ height: 200, width: '100%', objectFit: 'cover', borderRadius: 2, mb: 2, border: '1px solid rgba(255,255,255,0.06)' }} />
+                sx={{ height: 200, width: '100%', objectFit: 'cover', borderRadius: 2, mb: 2, border: '1px solid var(--voy-border)' }} />
               <Typography variant="subtitle2" sx={{ color: '#00d4ff', mb: 1 }}>{activeStory.role}</Typography>
-              <Typography variant="body2" sx={{ lineHeight: 1.8, color: '#64748b' }}>{activeStory.fullStory}</Typography>
+              <Typography variant="body2" sx={{ lineHeight: 1.8, color: 'var(--voy-text-muted)' }}>{activeStory.fullStory}</Typography>
             </>
           )}
         </DialogContent>

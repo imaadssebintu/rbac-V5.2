@@ -20,3 +20,4 @@ Disallow: /schedule
 
 # Sitemap
 Sitemap: https://voya.app/sitemap.xml
+Sitemap: https://voya.app/sitemap-static.xml

@@ -20,11 +20,11 @@ const GlassCard = ({ children, sx }) => (
   <Card
     sx={{
       borderRadius: 3,
-      background: 'rgba(255,255,255,0.03)',
+      background: 'var(--voy-surface)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255,255,255,0.06)',
-      boxShadow: '0 0 40px rgba(0,0,0,0.3)',
+      border: '1px solid var(--voy-border)',
+      boxShadow: 'var(--voy-shadow)',
       ...sx,
     }}
   >
@@ -45,14 +45,14 @@ const neonBtn = {
 
 const darkInput = {
   '& .MuiOutlinedInput-root': {
-    bgcolor: 'rgba(255,255,255,0.03)',
-    '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
-    '&:hover fieldset': { borderColor: 'rgba(0,212,255,0.3)' },
-    '&.Mui-focused fieldset': { borderColor: '#00d4ff', borderWidth: '1px' },
-    '& input': { color: '#f1f5f9' },
-    '& .MuiInputAdornment-root': { color: '#64748b' },
+    bgcolor: 'var(--voy-input-bg)',
+    '& fieldset': { borderColor: 'var(--voy-input-border)' },
+    '&:hover fieldset': { borderColor: 'var(--voy-input-hover-border)' },
+    '&.Mui-focused fieldset': { borderColor: 'var(--voy-input-focus-border)', borderWidth: '1px' },
+    '& input': { color: 'var(--voy-text)' },
+    '& .MuiInputAdornment-root': { color: 'var(--voy-text-muted)' },
   },
-  '& .MuiInputLabel-root': { color: '#64748b', '&.Mui-focused': { color: '#00d4ff' } },
+  '& .MuiInputLabel-root': { color: 'var(--voy-text-muted)', '&.Mui-focused': { color: 'var(--voy-input-focus-border)' } },
   '& .MuiFormHelperText-root': { color: '#f472b6' },
 };
 
@@ -184,16 +184,16 @@ const Login = ({ initialRole = null }) => {
   };
 
   const darkSelectSx = {
-    bgcolor: 'rgba(255,255,255,0.03)',
-    color: '#f1f5f9',
-    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.1)' },
-    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,212,255,0.3)' },
-    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#00d4ff' },
-    '& .MuiSvgIcon-root': { color: '#64748b' },
+    bgcolor: 'var(--voy-input-bg)',
+    color: 'var(--voy-text)',
+    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--voy-input-border)' },
+    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--voy-input-hover-border)' },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--voy-input-focus-border)' },
+    '& .MuiSvgIcon-root': { color: 'var(--voy-text-muted)' },
   };
 
   return (
-    <Box sx={{ bgcolor: '#050510', minHeight: '100vh', color: '#f1f5f9', py: { xs: 3, md: 8 } }}>
+    <Box sx={{ bgcolor: 'var(--voy-bg)', minHeight: '100vh', color: 'var(--voy-text)', py: { xs: 3, md: 8 } }}>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: { xs: 2, md: 4 }, px: 2 }}>
         <Box sx={{ textAlign: 'center' }}>
           <Groups sx={{ fontSize: { xs: 40, md: 60 }, color: '#00d4ff', mb: 1.5, filter: 'drop-shadow(0 0 20px rgba(0,212,255,0.4))' }} />
@@ -207,7 +207,7 @@ const Login = ({ initialRole = null }) => {
               Voya
             </Box>
           </Typography>
-          <Typography variant="body1" sx={{ color: '#64748b', fontSize: { xs: '0.9rem', md: '1rem' } }}>
+          <Typography variant="body1" sx={{ color: 'var(--voy-text-muted)', fontSize: { xs: '0.9rem', md: '1rem' } }}>
             Sign in to your account
           </Typography>
         </Box>
@@ -241,7 +241,7 @@ const Login = ({ initialRole = null }) => {
             <form onSubmit={handleSubmit}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                 <FormControl fullWidth size="small">
-                  <Typography variant="caption" sx={{ color: '#64748b', mb: 0.5, fontWeight: 600 }}>
+                  <Typography variant="caption" sx={{ color: 'var(--voy-text-muted)', mb: 0.5, fontWeight: 600 }}>
                     Login as
                   </Typography>
                   <Select
@@ -250,11 +250,11 @@ const Login = ({ initialRole = null }) => {
                     size="small"
                     sx={darkSelectSx}
                     MenuProps={{
-                      PaperProps: { sx: { bgcolor: 'rgba(15,15,30,0.95)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)' } }
+                      PaperProps: { sx: { bgcolor: 'var(--voy-menu-bg)', backdropFilter: 'blur(20px)', border: '1px solid var(--voy-menu-border)' } }
                     }}
                   >
                     {['traveler', 'guide', 'admin'].map((r) => (
-                      <MenuItem key={r} value={r} sx={{ color: '#cbd5e1', '&:hover': { bgcolor: 'rgba(0,212,255,0.08)' } }}>{r.charAt(0).toUpperCase() + r.slice(1)}</MenuItem>
+                      <MenuItem key={r} value={r} sx={{ color: 'var(--voy-text-secondary)', '&:hover': { bgcolor: 'rgba(0,212,255,0.08)' } }}>{r.charAt(0).toUpperCase() + r.slice(1)}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -292,8 +292,8 @@ const Login = ({ initialRole = null }) => {
               </Box>
             </form>
 
-            <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.06)', '&::before, &::after': { borderColor: 'rgba(255,255,255,0.06)' } }}>
-              <Typography variant="caption" sx={{ color: '#64748b', px: 1 }}>Or sign in with</Typography>
+            <Divider sx={{ my: 3, borderColor: 'var(--voy-divider)', '&::before, &::after': { borderColor: 'var(--voy-divider)' } }}>
+              <Typography variant="caption" sx={{ color: 'var(--voy-text-muted)', px: 1 }}>Or sign in with</Typography>
             </Divider>
 
             <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap" sx={{ mb: 2 }}>
@@ -302,7 +302,7 @@ const Login = ({ initialRole = null }) => {
                 return (
                   <Tooltip key={provider} title={`Continue with ${meta.label}`}>
                     <IconButton onClick={() => startOAuthLogin(provider)}
-                      sx={{ color: '#64748b', '&:hover': { color: '#00d4ff', bgcolor: 'rgba(0,212,255,0.08)' } }}>
+                      sx={{ color: 'var(--voy-text-muted)', '&:hover': { color: '#00d4ff', bgcolor: 'rgba(0,212,255,0.08)' } }}>
                       {meta.icon}
                     </IconButton>
                   </Tooltip>
@@ -310,19 +310,19 @@ const Login = ({ initialRole = null }) => {
               })}
               <Tooltip title="Login with QR">
                 <IconButton onClick={() => setQrOpen(true)}
-                  sx={{ color: '#64748b', '&:hover': { color: '#8b5cf6', bgcolor: 'rgba(139,92,246,0.08)' } }}>
+                  sx={{ color: 'var(--voy-text-muted)', '&:hover': { color: '#8b5cf6', bgcolor: 'rgba(139,92,246,0.08)' } }}>
                   <QrCode2 />
                 </IconButton>
               </Tooltip>
             </Stack>
 
             <Dialog open={qrOpen} onClose={() => setQrOpen(false)} maxWidth="xs" fullWidth
-              PaperProps={{ sx: { borderRadius: 3, bgcolor: 'rgba(10,10,25,0.96)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.06)' } }}>
-              <DialogTitle sx={{ color: '#f1f5f9', fontWeight: 700, textAlign: 'center' }}>Login with QR Code</DialogTitle>
+              PaperProps={{ sx: { borderRadius: 3, bgcolor: 'var(--voy-dialog-bg)', backdropFilter: 'blur(24px)', border: '1px solid var(--voy-border)' } }}>
+              <DialogTitle sx={{ color: 'var(--voy-text)', fontWeight: 700, textAlign: 'center' }}>Login with QR Code</DialogTitle>
               <DialogContent sx={{ textAlign: 'center', pb: 3 }}>
                 <Box component="img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Voya%20Login"
-                  alt="Voya QR login" sx={{ width: 200, height: 200, my: 2, borderRadius: 2, border: '1px solid rgba(255,255,255,0.06)' }} />
-                <Typography variant="body2" sx={{ color: '#64748b' }}>Scan with your mobile app to continue.</Typography>
+                  alt="Voya QR login" sx={{ width: 200, height: 200, my: 2, borderRadius: 2, border: '1px solid var(--voy-border)' }} />
+                <Typography variant="body2" sx={{ color: 'var(--voy-text-muted)' }}>Scan with your mobile app to continue.</Typography>
                 <Button variant="contained" sx={{ mt: 2, ...neonBtn }}
                   onClick={() => setLoginError('QR login is not configured yet.')}>Continue</Button>
               </DialogContent>

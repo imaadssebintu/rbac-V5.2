@@ -23,9 +23,9 @@ const Footer = () => {
       sx={{
         mt: 6,
         py: { xs: 4, md: 5 },
-        bgcolor: '#050510',
-        color: '#f1f5f9',
-        borderTop: '1px solid rgba(255,255,255,0.04)',
+        bgcolor: 'var(--voy-bg)',
+        color: 'var(--voy-text)',
+        borderTop: '1px solid var(--voy-border-light)',
         position: 'relative',
         '&::before': {
           content: '""',
@@ -54,7 +54,7 @@ const Footer = () => {
             >
               Voya
             </Typography>
-            <Typography variant="body2" sx={{ color: '#64748b', lineHeight: 1.8, maxWidth: 300 }}>
+            <Typography variant="body2" sx={{ color: 'var(--voy-text-muted)', lineHeight: 1.8, maxWidth: 300 }}>
               Trusted travel companions for verified guides, security escorts, and
               destination support. Built for safety-first exploration.
             </Typography>
@@ -62,7 +62,7 @@ const Footer = () => {
 
           {/* ── Company ── */}
           <Grid item xs={12} md={4}>
-            <Typography variant="subtitle1" gutterBottom sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '0.85rem', letterSpacing: 1 }}>
+            <Typography variant="subtitle1" gutterBottom sx={{ color: 'var(--voy-nav-text)', fontWeight: 600, fontSize: '0.85rem', letterSpacing: 1 }}>
               COMPANY
             </Typography>
             <Stack spacing={1}>
@@ -70,7 +70,7 @@ const Footer = () => {
                 href="https://sharif-wp.github.io/github-portifolio/#"
                 target="_blank"
                 rel="noreferrer"
-                sx={{ color: '#64748b', textDecoration: 'none', fontSize: '0.85rem', '&:hover': { color: '#00d4ff' }, transition: 'color 0.2s ease' }}
+                sx={{ color: 'var(--voy-text-muted)', textDecoration: 'none', fontSize: '0.85rem', '&:hover': { color: '#00d4ff' }, transition: 'color 0.2s ease' }}
               >
                 sharifssebuguzi.com
               </Link>
@@ -80,7 +80,7 @@ const Footer = () => {
                 '+256 704 451 552 (Asher Mulungi)',
                 '+256 751 077 107 (Sharif Ssebuguzi)',
               ].map((contact) => (
-                <Typography key={contact} variant="body2" sx={{ color: '#64748b', fontSize: '0.8rem' }}>
+                <Typography key={contact} variant="body2" sx={{ color: 'var(--voy-text-muted)', fontSize: '0.8rem' }}>
                   {contact}
                 </Typography>
               ))}
@@ -89,7 +89,7 @@ const Footer = () => {
 
           {/* ── Sponsors ── */}
           <Grid item xs={12} md={4}>
-            <Typography variant="subtitle1" gutterBottom sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '0.85rem', letterSpacing: 1 }}>
+            <Typography variant="subtitle1" gutterBottom sx={{ color: 'var(--voy-nav-text)', fontWeight: 600, fontSize: '0.85rem', letterSpacing: 1 }}>
               SPONSORS
             </Typography>
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
@@ -111,9 +111,9 @@ const Footer = () => {
                   rel="noreferrer"
                   clickable
                   sx={{
-                    bgcolor: 'rgba(255,255,255,0.03)',
-                    color: '#64748b',
-                    border: '1px solid rgba(255,255,255,0.06)',
+                    bgcolor: 'var(--voy-surface)',
+                    color: 'var(--voy-text-muted)',
+                    border: '1px solid var(--voy-border)',
                     transition: 'all 0.3s ease',
                     '&:hover': {
                       bgcolor: 'rgba(0,212,255,0.06)',
@@ -132,15 +132,15 @@ const Footer = () => {
           </Grid>
         </Grid>
 
-        <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.04)' }} />
+        <Divider sx={{ my: 3, borderColor: 'var(--voy-divider-light)' }} />
 
         <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} spacing={1}>
-          <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.75rem' }}>
+          <Typography variant="caption" sx={{ color: 'var(--voy-text-muted)', fontSize: '0.75rem' }}>
             Copyright © {new Date().getFullYear()} Voya. All rights reserved.
           </Typography>
-          <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.75rem' }}>
+          <Typography variant="caption" sx={{ color: 'var(--voy-text-muted)', fontSize: '0.75rem' }}>
             Built by{' '}
-            <Box component="span" sx={{ color: '#64748b', '&:hover': { color: '#8b5cf6' }, transition: 'color 0.2s ease' }}>
+            <Box component="span" sx={{ color: 'var(--voy-text-muted)', '&:hover': { color: '#8b5cf6' }, transition: 'color 0.2s ease' }}>
               Ssebuguzi Sharif
             </Box>
           </Typography>
